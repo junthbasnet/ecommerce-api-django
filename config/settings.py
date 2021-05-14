@@ -58,6 +58,7 @@ SYSTEM_APPS = [
     'blog',
     'common',
     'core',
+    'newsletter',
     'users',
 ]
 
