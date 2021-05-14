@@ -57,6 +57,7 @@ VENDOR_APPS = [
 SYSTEM_APPS = [
     'blog',
     'common',
+    'core',
     'users',
 ]
 
