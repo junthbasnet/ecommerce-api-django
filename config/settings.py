@@ -60,6 +60,7 @@ SYSTEM_APPS = [
     'core',
     'newsletter',
     'notifications',
+    'products',
     'users',
 ]
 

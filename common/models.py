@@ -68,7 +68,7 @@ class BaseModel(models.Model):
 
 
 class SEOBaseModel(TimeStampedModel):
-    og_url = models.URLField(blank=True, default="https://lando.com")
+    og_url = models.URLField(blank=True, default="https://nebuyo.com")
     og_title = models.CharField(max_length=255, blank=True, default="")
     og_description = models.TextField(blank=True, default="")
     og_image = models.ImageField(upload_to='seo-uploads', null=True, blank=True)
