@@ -12,7 +12,7 @@ apipatterns = (
         path('blogs/', include('blog.urls')),
         path('core/', include('core.urls')),
         path('newsletter/', include('newsletter.urls')),
-        # path('notifications/', include('notifications.urls')),
+        path('notifications/', include('notifications.urls')),
     ], 'api')
 
 urlpatterns = [

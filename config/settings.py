@@ -59,6 +59,7 @@ SYSTEM_APPS = [
     'common',
     'core',
     'newsletter',
+    'notifications',
     'users',
 ]
 
