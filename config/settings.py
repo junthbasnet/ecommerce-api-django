@@ -55,6 +55,7 @@ VENDOR_APPS = [
 ]
 
 SYSTEM_APPS = [
+    'common',
     'users',
 ]
 
