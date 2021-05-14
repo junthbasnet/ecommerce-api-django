@@ -47,7 +47,7 @@ DJANGO_APPS = [
 VENDOR_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
-    'django_summernote',
+    'django_summernote.apps.DjangoSummernoteConfig',
     'corsheaders',
     'django_filters',
     'django_extensions',
