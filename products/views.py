@@ -84,7 +84,7 @@ class ProductAPIViewSet(ModelViewSet):
     APIViewSet to manage products.
     """
     serializer_class = ProductSerializer
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().order_by('-id')
     filter_backends = (DjangoFilterBackend, SearchFilter)
     search_fields = (
         'name', 'overview', 'slug', 'sub_category__name',
@@ -94,7 +94,7 @@ class ProductAPIViewSet(ModelViewSet):
         'sub_category', 'sub_category__slug', 'sub_category__category',
         'sub_category__category__slug',
     )
-    
+
 
 
 
