@@ -129,3 +129,75 @@ class ProductAdmin(admin.ModelAdmin):
             img_url="https://imgur.com/2pO6gCt.png"
         return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
 
+
+@admin.register(GlobalSpecification)
+class GlobalSpecificationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'slug',)
+    search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'name', 'slug',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
+
+@admin.register(ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'color', 'image_thumbnail',)
+    list_filter = ('color', 'color__product',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'color', 'image',
+            )
+        }),
+    )
+
+    def image_thumbnail(self, obj):
+        try:
+            img_url=obj.image.url
+        except :
+            img_url="https://imgur.com/2pO6gCt.png"
+        return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
+
+
+class ProductImageInline(admin.TabularInline):
+    model =  ProductImage
+    extra = 1
+
+
+@admin.register(ProductColor)
+class ProductColorAdmin(admin.ModelAdmin):
+    list_display = ('id', 'product','name', 'code',)
+    list_filter = ('product',)
+    search_fields = ('name', 'code', 'product__name',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'product', 'name', 'code',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+    inlines = [
+        ProductImageInline,
+    ]
+
+
