@@ -95,6 +95,7 @@ class Product(SEOBaseModel):
 
     overview = models.TextField(default='')
     specifications = models.JSONField(default=dict)
+    image = models.ImageField(_('Image'), upload_to='products/%Y/%m/%d/', default=None)
 
     class Meta:
         verbose_name = _('Product')
@@ -117,6 +118,9 @@ class GlobalSpecification(TimeStampedModel):
 
     def __str__(self):
         return f'{self.name}'
+
+
+
 
 
 
