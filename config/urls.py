@@ -13,6 +13,7 @@ apipatterns = (
         path('core/', include('core.urls')),
         path('newsletter/', include('newsletter.urls')),
         path('notifications/', include('notifications.urls')),
+        path('products/', include('products.urls')),
     ], 'api')
 
 urlpatterns = [
@@ -21,8 +22,6 @@ urlpatterns = [
     path('api/', include(apipatterns)),
     path('', home_view),
     path('summernote/', include('django_summernote.urls')),
-
-
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
