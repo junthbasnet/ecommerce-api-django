@@ -1,9 +1,15 @@
+import os
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from common.models import SEOBaseModel, TimeStampedModel
+
+
+def product_image_path(instance, filename):
+    """ Generate filepath for product images of respective color"""
+    return os.path.join(f'products/{instance.color.name}/', filename)
 
 
 class Category(SEOBaseModel):
@@ -95,7 +101,7 @@ class Product(SEOBaseModel):
 
     overview = models.TextField(default='')
     specifications = models.JSONField(default=dict)
-    image = models.ImageField(_('Image'), upload_to='products/%Y/%m/%d/', default=None)
+    image = models.ImageField(_('Image'), upload_to='products', default=None)
 
     class Meta:
         verbose_name = _('Product')
@@ -121,6 +127,9 @@ class GlobalSpecification(TimeStampedModel):
 
 
 class ProductColor(TimeStampedModel):
+    """
+    Product color
+    """
     name = models.CharField(_('name'), max_length=31)
     code = models.CharField(_('color code'), max_length=15)
     product = models.ForeignKey(
@@ -136,6 +145,24 @@ class ProductColor(TimeStampedModel):
             models.UniqueConstraint(fields=['name', 'product'], name='unique_colors')
         ]
     
+    def __str__(self):
+        return f'{self.name}'
+    
+
+class ProductImage(models.Model):
+    """
+    Product images of respective color.
+    """
+    color = models.ForeignKey(
+        'ProductColor',
+        on_delete=models.CASCADE,
+        related_name='images'
+    )
+    image = models.ImageField(_('image'), upload_to=product_image_path, default=None)
+
+    class Meta:
+        verbose_name = _('Product Image')
+        verbose_name_plural = _('Product Images')
 
 
 
