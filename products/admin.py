@@ -43,4 +43,40 @@ class CategoryAdmin(admin.ModelAdmin):
             img_url=obj.image.url
         except :
             img_url="https://imgur.com/2pO6gCt.png"
-        return mark_safe(f'<img src="{img_url}" style="height:15vh; width:15vh;object-fit:cover;"/>')
+        return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
+
+
+@admin.register(SubCategory)
+class SubCategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'category', 'image_thumbnail',)
+    list_filter = ('category',)
+    search_fields = ('name', 'description', 'category__name', 'category__description',)
+    prepopulated_fields = {'slug': ('name',)}
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'category', 'name', 'slug', 'description', 'image',
+            )
+        }),
+
+        (
+            'SEO', {
+            'fields': (
+                'og_url', 'og_title', 'og_description', 'og_image', 'meta_title', 'meta_description', 'keywords', 'tags',
+            ),
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
+    def image_thumbnail(self, obj):
+        try:
+            img_url=obj.image.url
+        except :
+            img_url="https://imgur.com/2pO6gCt.png"
+        return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
