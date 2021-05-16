@@ -120,6 +120,28 @@ class GlobalSpecification(TimeStampedModel):
         return f'{self.name}'
 
 
+class ProductColor(TimeStampedModel):
+    name = models.CharField(_('name'), max_length=31)
+    code = models.CharField(_('color code'), max_length=15)
+    product = models.ForeignKey(
+        'Product',
+        on_delete=models.CASCADE,
+        related_name='colors'
+    )
+
+    class Meta:
+        verbose_name = _('Product Color')
+        verbose_name_plural = _('Product Color')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product'], name='unique_colors')
+        ]
+    
+
+
+
+
+
+
 
 
 
