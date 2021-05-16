@@ -15,6 +15,7 @@ from .models import (
 from .serializers import (
     CategorySerializer,
     SubCategorySerializer,
+    ProductSerializer,
 )
 
 
@@ -56,7 +57,7 @@ class SubCategoryAPIViewSet(ModelViewSet):
     search_fields = (
         'name', 'description', 'slug', 'category__name', 'category__description',
     )
-    filterset_fields = ('category',)
+    filterset_fields = ('category', 'category__slug',)
 
     def destroy(self, request, *args, **kwargs):
         """
@@ -76,6 +77,25 @@ class SubCategoryAPIViewSet(ModelViewSet):
 
     def perform_destroy(self, instance):
         instance.delete()
+
+
+class ProductAPIViewSet(ModelViewSet):
+    """
+    APIViewSet to manage products.
+    """
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    search_fields = (
+        'name', 'overview', 'slug', 'sub_category__name',
+        'sub_category__description',
+    )
+    filterset_fields = (
+        'sub_category', 'sub_category__slug', 'sub_category__category',
+        'sub_category__category__slug',
+    )
+    
+
 
 
 

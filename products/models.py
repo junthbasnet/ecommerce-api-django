@@ -90,6 +90,7 @@ class Product(SEOBaseModel):
         _('marked price'),
         max_digits=10,
         decimal_places=2,
+        default=0,
         validators=[MinValueValidator(1)]
     )
     selling_price = models.DecimalField(
@@ -109,6 +110,11 @@ class Product(SEOBaseModel):
     
     def __str__(self):
         return f'{self.name}'
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 
 class GlobalSpecification(TimeStampedModel):

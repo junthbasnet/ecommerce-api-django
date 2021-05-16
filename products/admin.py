@@ -87,7 +87,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'sub_category', 'brand', 'quantity', 'selling_price','image_thumbnail',)
-    list_filter = ('sub_category', 'sub_category__category', )
+    list_filter = ('sub_category', 'sub_category__category', 'brand',)
     search_fields = ('name', 'overview', 'sub_category__name', 'sub_category__description',)
     prepopulated_fields = {'slug': ('name',)}
     fieldsets = (

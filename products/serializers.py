@@ -28,6 +28,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
     Serializes Sub-Category model instances.
     """
     category_name = serializers.CharField(source='category.name', read_only=True)
+
     class Meta:
         model = SubCategory
         exclude = (
@@ -38,10 +39,19 @@ class SubCategorySerializer(serializers.ModelSerializer):
         )
 
 
-# class ProductSerializer(serializers.ModelSerializer):
-#     """
-#     Serializes Product model instances.
-#     """
+class ProductSerializer(serializers.ModelSerializer):
+    """
+    Serializes Product model instances.
+    """
+    category_name = serializers.CharField(source='sub_category.category.name', read_only=True)
+    sub_category_name = serializers.CharField(source='sub_category.name', read_only=True)
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+        read_only_fields = (
+            'slug',
+        )
     
 
     
