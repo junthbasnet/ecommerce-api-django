@@ -15,9 +15,33 @@ class CategorySerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Category
-        fields = (
-            'id', 'name', 'slug', 'description', 'image', 'priority',
+        exclude = (
+            'modified_on', 'created_on',
         )
         read_only_fields = (
             'slug',
         )
+
+
+class SubCategorySerializer(serializers.ModelSerializer):
+    """
+    Serializes Sub-Category model instances.
+    """
+    category_name = serializers.CharField(source='category.name', read_only=True)
+    class Meta:
+        model = SubCategory
+        exclude = (
+            'modified_on', 'created_on',
+        )
+        read_only_fields = (
+            'slug', 'category_name',
+        )
+
+
+# class ProductSerializer(serializers.ModelSerializer):
+#     """
+#     Serializes Product model instances.
+#     """
+    
+
+    
