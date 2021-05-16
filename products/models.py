@@ -3,7 +3,7 @@ from django.core.validators import MinValueValidator
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from common.models import SEOBaseModel
+from common.models import SEOBaseModel, TimeStampedModel
 
 
 class Category(SEOBaseModel):
@@ -102,6 +102,25 @@ class Product(SEOBaseModel):
     
     def __str__(self):
         return f'{self.name}'
+
+
+class GlobalSpecification(TimeStampedModel):
+    """
+    Model to store product specification keys.
+    """
+    name = models.CharField(_('name'), max_length=255, unique=True)
+    slug = models.CharField(_('slug'), max_length=255, unique=True)
+
+    class Meta:
+        verbose_name = _('Global Specification')
+        verbose_name_plural = _('Global Specifications')
+
+    def __str__(self):
+        return f'{self.name}'
+
+
+
+
     
 
 
