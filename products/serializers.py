@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import (
+    Brand,
     Category,
     SubCategory,
     Product,
@@ -38,6 +39,20 @@ class SubCategorySerializer(serializers.ModelSerializer):
         )
 
 
+class BrandSerializer(serializers.ModelSerializer):
+    """
+    Serializes Brand model instances.
+    """
+    class Meta:
+        model = Brand
+        fields = (
+            'id', 'name', 'slug', 'image',
+        ) 
+        read_only_fields = (
+            'slug',
+        )
+
+
 class ProductSerializer(serializers.ModelSerializer):
     """
     Serializes Product model instances.
@@ -62,5 +77,22 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'image',
         )
+
+
+class GlobalSpecificationSerializer(serializers.ModelSerializer):
+    """
+    Serializes Global Specification model instances.
+    """
+    class Meta:
+        model = GlobalSpecification
+        fields = (
+            'id', 'name', 'slug',
+        )
+        read_only_fields = (
+            'slug',
+        )
+
+
+
 
     
