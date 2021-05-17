@@ -3,7 +3,6 @@ from .models import (
     Category,
     SubCategory,
     Product,
-    ProductColor,
     ProductImage,
     GlobalSpecification,
 )
@@ -52,6 +51,16 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'slug',
         )
-    
+
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    """
+    Serializes ProductImage model instances.
+    """
+    class Meta:
+        model=ProductImage
+        fields = (
+            'id', 'image',
+        )
 
     

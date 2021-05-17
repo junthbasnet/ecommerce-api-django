@@ -3,11 +3,11 @@ from django.utils.safestring import mark_safe
 from django.db import models
 from django_json_widget.widgets import JSONEditorWidget
 from .models import (
+    Brand,
     Category,
     SubCategory,
     Product,
     GlobalSpecification,
-    ProductColor,
     ProductImage,
 )
 
@@ -94,7 +94,7 @@ class ProductAdmin(admin.ModelAdmin):
         (
             'General', {
             'fields': (
-                'sub_category', 'name', 'slug', 'brand', 'image',
+                'sub_category', 'name', 'slug', 'brand', 'hero_image',
                 'quantity', 'items_sold', 'marked_price', 'selling_price', 'overview',
             )
         }),
@@ -124,7 +124,7 @@ class ProductAdmin(admin.ModelAdmin):
 
     def image_thumbnail(self, obj):
         try:
-            img_url=obj.image.url
+            img_url=obj.hero_image.url
         except :
             img_url="https://imgur.com/2pO6gCt.png"
         return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
@@ -153,13 +153,12 @@ class GlobalSpecificationAdmin(admin.ModelAdmin):
 
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'color', 'image_thumbnail',)
-    list_filter = ('color', 'color__product',)
+    list_display = ('id', 'image_thumbnail',)
     fieldsets = (
         (
             'General', {
             'fields': (
-                'color', 'image',
+                 'image',
             )
         }),
     )
@@ -172,32 +171,25 @@ class ProductImageAdmin(admin.ModelAdmin):
         return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
 
 
-class ProductImageInline(admin.TabularInline):
-    model =  ProductImage
-    extra = 1
-
-
-@admin.register(ProductColor)
-class ProductColorAdmin(admin.ModelAdmin):
-    list_display = ('id', 'product','name', 'code',)
-    list_filter = ('product',)
-    search_fields = ('name', 'code', 'product__name',)
+@admin.register(Brand)
+class BrandAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'image_thumbnail')
+    search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
     fieldsets = (
         (
             'General', {
             'fields': (
-                'product', 'name', 'code',
+                 'name', 'slug', 'image',
             )
         }),
-        (
-            'Important Dates', {
-            'fields': (
-                'created_on', 'modified_on',
-            ),
-        }),
     )
-    inlines = [
-        ProductImageInline,
-    ]
+
+    def image_thumbnail(self, obj):
+        try:
+            img_url=obj.image.url
+        except :
+            img_url="https://imgur.com/2pO6gCt.png"
+        return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
 
 

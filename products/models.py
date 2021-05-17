@@ -7,11 +7,6 @@ from django.utils.translation import gettext_lazy as _
 from common.models import SEOBaseModel, TimeStampedModel
 
 
-def product_image_path(instance, filename):
-    """ Generate filepath for product images of respective color"""
-    return os.path.join(f'products/{instance.color.name}/', filename)
-
-
 class Category(SEOBaseModel):
     """
     Product Category
@@ -67,6 +62,27 @@ class SubCategory(SEOBaseModel):
         super().save(*args, **kwargs)
 
 
+class Brand(models.Model):
+    """
+    Product brand
+    """
+    name = models.CharField(_('name'), max_length=64, unique=True)
+    slug = models.CharField(_('slug'), max_length=64, unique=True)
+    image = models.ImageField(_('image'), upload_to='brands')
+    
+    class Meta:
+        verbose_name = _('Brand')
+        verbose_name_plural = _('Brands')
+    
+    def __str__(self):
+        return f'{self.name}'
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
 class Product(SEOBaseModel):
     """
     Model to store product information.
@@ -78,10 +94,12 @@ class Product(SEOBaseModel):
         on_delete=models.PROTECT,
         related_name='products'
     )
-    brand = models.CharField(
-        _('brand'),
-        max_length=255,
-        help_text=_('brand the product belongs to (eg. JBL)'),
+    brand = models.ForeignKey(
+        Brand,
+        on_delete=models.SET_NULL,
+        null=True,
+        default=None,
+        related_name='brand_products',
     )
     quantity = models.PositiveIntegerField(default=0)
     items_sold = models.PositiveIntegerField(default=0)
@@ -102,7 +120,7 @@ class Product(SEOBaseModel):
 
     overview = models.TextField(default='')
     specifications = models.JSONField(default=dict)
-    image = models.ImageField(_('Image'), upload_to='products', default=None)
+    hero_image = models.ImageField(_('Image'), upload_to='products/hero-image/', default=None)
 
     class Meta:
         verbose_name = _('Product')
@@ -131,44 +149,20 @@ class GlobalSpecification(TimeStampedModel):
     def __str__(self):
         return f'{self.name}'
 
-
-class ProductColor(TimeStampedModel):
-    """
-    Product color
-    """
-    name = models.CharField(_('name'), max_length=31)
-    code = models.CharField(_('color code'), max_length=15)
-    product = models.ForeignKey(
-        'Product',
-        on_delete=models.CASCADE,
-        related_name='colors'
-    )
-
-    class Meta:
-        verbose_name = _('Product Color')
-        verbose_name_plural = _('Product Color')
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'product'], name='unique_colors')
-        ]
-    
-    def __str__(self):
-        return f'{self.name}'
     
 
 class ProductImage(models.Model):
     """
-    Product images of respective color.
+    Product images.
     """
-    color = models.ForeignKey(
-        'ProductColor',
-        on_delete=models.CASCADE,
-        related_name='images'
-    )
-    image = models.ImageField(_('image'), upload_to=product_image_path, default=None)
+    image = models.ImageField(_('image'), upload_to='products/images/', default=None)
 
     class Meta:
         verbose_name = _('Product Image')
         verbose_name_plural = _('Product Images')
+
+
+    
 
 
 

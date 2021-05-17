@@ -8,7 +8,6 @@ from .models import (
     Category,
     SubCategory,
     Product,
-    ProductColor,
     ProductImage,
     GlobalSpecification,
 )
@@ -92,7 +91,7 @@ class ProductAPIViewSet(ModelViewSet):
     )
     filterset_fields = (
         'sub_category', 'sub_category__slug', 'sub_category__category',
-        'sub_category__category__slug',
+        'sub_category__category__slug', 'brand', 
     )
 
 
