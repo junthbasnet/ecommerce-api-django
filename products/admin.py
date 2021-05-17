@@ -9,6 +9,8 @@ from .models import (
     Product,
     GlobalSpecification,
     ProductImage,
+    Question,
+    Answer,
 )
 
 
@@ -203,5 +205,45 @@ class BrandAdmin(admin.ModelAdmin):
         except :
             img_url="https://imgur.com/2pO6gCt.png"
         return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
+
+
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'product', 'question',)
+    search_fields = ('question',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'user', 'product', 'question',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
+
+@admin.register(Answer)
+class AnswerAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'question',)
+    search_fields = ('question', 'answer', )
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'user', 'question', 'answer',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
 
 

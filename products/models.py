@@ -190,6 +190,9 @@ class Question(TimeStampedModel):
         verbose_name = _('Question')
         verbose_name_plural = _('Questions')
         ordering = ('-created_on', )
+    
+    def __str__(self):
+        return f'{self.question[:20]}... asked by {self.user}'
 
 
 class Answer(TimeStampedModel):
@@ -206,9 +209,12 @@ class Answer(TimeStampedModel):
     answer = models.TextField()
 
     class Meta:
-        verbose_name = _('Question')
-        verbose_name_plural = _('Questions')
+        verbose_name = _('Answer')
+        verbose_name_plural = _('Answers')
         ordering = ('-created_on', )
+    
+    def __str__(self):
+        return f'{self.answer[:20]}... asked by {self.user}'
 
 
 
