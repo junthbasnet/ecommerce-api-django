@@ -218,6 +218,13 @@ class Answer(TimeStampedModel):
         return f'{self.answer[:20]}... asked by {self.user}'
 
 
+# class RatingAndReviews(TimeStampedModel):
+#     """
+#     Model to store ratings and reviews given in products.
+#     """
+#     pass
+
+
 
 
 

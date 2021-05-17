@@ -1,9 +1,16 @@
+from django.contrib.postgres.search import (
+    SearchVector,
+    SearchQuery,
+    SearchRank
+)
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import ProtectedError
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import ListAPIView
 from .models import (
     Brand,
     Category,
@@ -154,6 +161,51 @@ class ProductAnswerAPIViewSet(ModelViewSet):
         answer_obj = serializer.save(user=self.request.user)
         answer_obj.question.is_answered=True
         answer_obj.question.save()
+
+
+class CompareSimilarProductsListAPIView(ListAPIView):
+    """
+    APIView that returns list of similar products for comparision.
+    """
+    serializer_class = ProductSerializer
+    queryset = Product.objects.none()
+
+    def list(self, request, *args, **kwargs):
+        product_id = request.GET.get('product_id', None)
+        if product_id:
+            try:
+                product_obj = Product.objects.get(pk=product_id)
+            except ObjectDoesNotExist:
+                return Response(
+                    {
+                        'message':'Object doesn\'t exist'
+                    },
+                    status.HTTP_404_NOT_FOUND
+                )
+        else:
+            return Response(
+                {
+                    'message':'Please provide product_id.'
+                },
+                status.HTTP_406_NOT_ACCEPTABLE
+            )
+        
+        query = product_obj.name
+        search_vector = (
+            SearchVector('name', weight='A') +
+            SearchVector('overview', weight='B')
+        )
+        search_query = SearchQuery(query)
+        queryset = (
+            Product.objects.annotate(
+                rank=SearchRank(search_vector, search_query)
+            )
+            .order_by('-rank')
+        )[:4]
+        print(queryset)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 
     
