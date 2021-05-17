@@ -11,6 +11,8 @@ from .models import (
     Product,
     ProductImage,
     GlobalSpecification,
+    Question,
+    Answer,
 )
 from .serializers import (
     CategorySerializer,
@@ -19,6 +21,8 @@ from .serializers import (
     GlobalSpecificationSerializer,
     BrandSerializer,
     ProductImageSerializer,
+    ProductQuestionSerializer,
+    ProductAnswerSerializer,
 )
 
 
@@ -121,6 +125,35 @@ class ProductImageAPIViewSet(ModelViewSet):
     """
     serializer_class = ProductImageSerializer
     queryset = ProductImage.objects.all()
+
+
+class ProductQuestionAPIViewSet(ModelViewSet):
+    """
+    APIViewSet to manage product questions.
+    """
+    serializer_class = ProductQuestionSerializer
+    queryset = Question.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('product', )
+
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class ProductAnswerAPIViewSet(ModelViewSet):
+    """
+    APIViewSet to manage product answers.
+    """
+    serializer_class = ProductAnswerSerializer
+    queryset = Answer.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('question', )
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    
 
 
 

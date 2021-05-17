@@ -209,13 +209,13 @@ class BrandAdmin(admin.ModelAdmin):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'product', 'question',)
+    list_display = ('id', 'user', 'product', 'question', 'is_answered',)
     search_fields = ('question',)
     fieldsets = (
         (
             'General', {
             'fields': (
-                'user', 'product', 'question',
+                'user', 'product', 'question', 'is_answered',
             )
         }),
         (

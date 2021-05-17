@@ -185,6 +185,7 @@ class Question(TimeStampedModel):
         related_name='questions',
     )
     question = models.TextField()
+    is_answered = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = _('Question')

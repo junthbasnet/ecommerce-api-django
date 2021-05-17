@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from .models import (
     Brand,
@@ -6,7 +7,10 @@ from .models import (
     Product,
     ProductImage,
     GlobalSpecification,
+    Question,
+    Answer,
 )
+from users.serializers import UserSerializer
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -90,6 +94,46 @@ class GlobalSpecificationSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             'slug',
+        )
+
+
+class ProductQuestionSerializer(serializers.ModelSerializer):
+    """
+    Serializes product questions.
+    """
+    answer = serializers.SerializerMethodField()
+    user = UserSerializer(read_only=True)
+    class Meta:
+        model = Question
+        fields = (
+            'id', 'user', 'product', 'question', 'answer', 'is_answered',
+            'created_on', 'modified_on',
+        )
+        read_only_fields = (
+            'user', 'created_on', 'modified_on',
+            'is_answered', 'answer',
+        )
+    
+    def get_answer(self, obj):
+        try:
+            return ProductAnswerSerializer(obj.answer).data
+        except ObjectDoesNotExist:
+            return None
+
+
+class ProductAnswerSerializer(serializers.ModelSerializer):
+    """
+    Serializes product questions.
+    """
+    user = UserSerializer(read_only=True)
+    class Meta:
+        model = Answer
+        fields = (
+            'id', 'user', 'question', 'answer',
+            'created_on', 'modified_on',
+        )
+        read_only_fields = (
+            'user', 'created_on', 'modified_on',
         )
 
 
