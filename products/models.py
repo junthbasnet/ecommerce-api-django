@@ -120,7 +120,10 @@ class Product(SEOBaseModel):
 
     overview = models.TextField(default='')
     specifications = models.JSONField(default=dict)
-    hero_image = models.ImageField(_('Image'), upload_to='products/hero-image/', default=None)
+
+    hero_image = models.ImageField(_('hero image'), upload_to='products/hero-image/', default=None)
+    images = models.JSONField(_('images'), default=list)
+    color_images = models.JSONField(_('color images'), default=list)
 
     class Meta:
         verbose_name = _('Product')
@@ -150,7 +153,6 @@ class GlobalSpecification(TimeStampedModel):
         return f'{self.name}'
 
     
-
 class ProductImage(models.Model):
     """
     Product images.

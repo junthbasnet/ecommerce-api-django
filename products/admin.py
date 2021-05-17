@@ -104,6 +104,18 @@ class ProductAdmin(admin.ModelAdmin):
                 'specifications',
             )
         }),
+        (
+            'Images', {
+            'fields': (
+                'images',
+            )
+        }),
+        (
+            'Color Images', {
+            'fields': (
+                'color_images',
+            )
+        }),
 
         (
             'SEO', {
