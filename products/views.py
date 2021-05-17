@@ -134,7 +134,7 @@ class ProductQuestionAPIViewSet(ModelViewSet):
     serializer_class = ProductQuestionSerializer
     queryset = Question.objects.all()
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('product', )
+    filterset_fields = ('product', 'is_answered',)
 
 
     def perform_create(self, serializer):
@@ -151,7 +151,10 @@ class ProductAnswerAPIViewSet(ModelViewSet):
     filterset_fields = ('question', )
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        answer_obj = serializer.save(user=self.request.user)
+        answer_obj.question.is_answered=True
+        answer_obj.question.save()
+
 
     
 
