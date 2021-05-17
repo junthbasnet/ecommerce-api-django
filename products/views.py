@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from .models import (
+    Brand,
     Category,
     SubCategory,
     Product,
@@ -15,6 +16,9 @@ from .serializers import (
     CategorySerializer,
     SubCategorySerializer,
     ProductSerializer,
+    GlobalSpecificationSerializer,
+    BrandSerializer,
+    ProductImageSerializer,
 )
 
 
@@ -93,6 +97,30 @@ class ProductAPIViewSet(ModelViewSet):
         'sub_category', 'sub_category__slug', 'sub_category__category',
         'sub_category__category__slug', 'brand', 
     )
+
+
+class GlobalSpecificationAPIViewSet(ModelViewSet):
+    """
+    APIViewSet to manage global product specification.
+    """
+    serializer_class = GlobalSpecificationSerializer
+    queryset = GlobalSpecification.objects.all()
+
+
+class BrandAPIViewSet(ModelViewSet):
+    """
+    APIViewSet to manage product brands.
+    """
+    serializer_class = BrandSerializer
+    queryset = Brand.objects.all()
+
+
+class ProductImageAPIViewSet(ModelViewSet):
+    """
+    APIViewSet to manage product images.
+    """
+    serializer_class = ProductImageSerializer
+    queryset = ProductImage.objects.all()
 
 
 

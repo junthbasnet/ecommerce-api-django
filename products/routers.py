@@ -1,13 +1,20 @@
 from rest_framework.routers import DefaultRouter
 
 from .views import (
+    BrandAPIViewSet,
     CategoryAPIViewSet,
-    SubCategoryAPIViewSet,
+    GlobalSpecificationAPIViewSet,
     ProductAPIViewSet,
+    ProductImageAPIViewSet,
+    SubCategoryAPIViewSet,
 )
 
 router = DefaultRouter()
 
 router.register('categories', CategoryAPIViewSet)
 router.register('sub-categories', SubCategoryAPIViewSet)
+router.register('brands', BrandAPIViewSet)
+router.register('specifications', GlobalSpecificationAPIViewSet)
+router.register('images', ProductImageAPIViewSet)
 router.register('', ProductAPIViewSet)
+
