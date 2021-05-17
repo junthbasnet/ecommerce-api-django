@@ -169,6 +169,52 @@ class ProductImage(models.Model):
         verbose_name_plural = _('Product Images')
 
 
+class Question(TimeStampedModel):
+    """
+    Model to store product specific question.
+    """
+    user = models.ForeignKey(
+        'users.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='user_questions'
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='questions',
+    )
+    question = models.TextField()
+
+    class Meta:
+        verbose_name = _('Question')
+        verbose_name_plural = _('Questions')
+        ordering = ('-created_on', )
+
+
+class Answer(TimeStampedModel):
+    """
+    Model to store answer for product specific questions.
+    """
+    user = models.ForeignKey(
+        'users.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='user_answers'
+    )
+    question = models.OneToOneField(Question, on_delete=models.CASCADE)
+    answer = models.TextField()
+
+    class Meta:
+        verbose_name = _('Question')
+        verbose_name_plural = _('Questions')
+        ordering = ('-created_on', )
+
+
+
+
+
+
     
 
 
