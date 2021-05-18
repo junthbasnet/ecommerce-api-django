@@ -50,7 +50,7 @@ class SocialLinkSetting(models.Model):
 
 
 class PaymentMethod(TimeStampedModel):
-    method_name = models.CharField(_('method name'), max_length=128)
+    method_name = models.CharField(_('method name'), max_length=128, unique=True)
     charge = models.PositiveIntegerField(
         _('charge'),
         default=0,

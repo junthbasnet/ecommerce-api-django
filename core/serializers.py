@@ -60,6 +60,22 @@ class FAQSerializer(serializers.ModelSerializer):
 
 
 class PaymentMethodSerializer(serializers.ModelSerializer):
+    """
+    Serializes payment method model instances.
+    """
     class Meta:
         model = PaymentMethod
-        exclude = ('modified_on', 'created_on')
+        fields = (
+            'id', 'method_name', 'charge', 'icon', 'priority', 'created_on', 'modified_on',
+        )
+        read_only_fields = (
+            'created_on', 'modified_on',
+        )
+    
+    def validate(self, data):
+        """
+        Check if payment environment variables are set.
+        """
+        print(data.get('method_name'))
+        return data
+
