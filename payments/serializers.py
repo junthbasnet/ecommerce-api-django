@@ -1,7 +1,25 @@
-# from rest_framework import serializers
+from rest_framework import serializers
 
-# from .models import IMEPay, Payment
+from .models import (
+    # IMEPay,
+    # Payment,
+    PaymentEnvironmentVariable,
+)
 # from orders.models import Order
+
+
+class EnvironmentVariableSerializer(serializers.ModelSerializer):
+    """
+    Serializes payment environment variable model instances.
+    """
+    class Meta:
+        model = PaymentEnvironmentVariable
+        fields = (
+            'id', 'key', 'value', 'created_on', 'modified_on',
+        )
+        read_only_fields = (
+            'created_on', 'modified_on',
+        )
 
 # class IMEPaySerializer(serializers.ModelSerializer):
 #     amount = serializers.IntegerField(min_value=1)

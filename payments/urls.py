@@ -1,10 +1,10 @@
 from django.urls import path, include
 
 from .routers import router
-from .views import (
-    IMEPayTokenCreateAPI,
-    CreatePaymentAPI
-)
+# from .views import (
+#     IMEPayTokenCreateAPI,
+#     CreatePaymentAPI
+# )
 
 app_name = 'payment'
 

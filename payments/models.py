@@ -15,6 +15,7 @@ class PaymentEnvironmentVariable(TimeStampedModel):
     class Meta:
         verbose_name = _('Payment Environment Variables')
         verbose_name_plural = _('Payment Environment Variables')
+        ordering = ('-created_on',)
     
     def __str__(self):
         return f'{self.key}'

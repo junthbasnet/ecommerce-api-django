@@ -1,7 +1,10 @@
 from rest_framework.routers import DefaultRouter
 
 # from .views import UserPayment
+from .views import (
+    PaymentEnvironmentVariableAPIViewSet,
+)
 
 router = DefaultRouter()
 
-# router.register('my-payments', UserPayment)
+router.register('env-variables', PaymentEnvironmentVariableAPIViewSet)

@@ -14,6 +14,7 @@ apipatterns = (
         path('newsletter/', include('newsletter.urls')),
         path('notifications/', include('notifications.urls')),
         path('products/', include('products.urls')),
+        path('payments/', include('payments.urls')),
     ], 'api')
 
 urlpatterns = [

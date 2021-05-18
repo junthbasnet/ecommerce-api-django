@@ -1,24 +1,36 @@
-# from decimal import Decimal
-
-# from django_filters.rest_framework import DjangoFilterBackend
-# from rest_framework import status, viewsets, filters
-# from rest_framework.permissions import (
-#     IsAuthenticated,
-# )
-# from rest_framework.response import Response
-# from rest_framework.views import APIView
-
-# from payments.models import (
-#     Payment
-# )
-# from .serializers import (
-#     IMEPaySerializer,
-#     PaymentSerializer,
-# )
+from decimal import Decimal
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status, viewsets, filters
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAdminUser,
+)
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
+from .models import (
+    # Payment,
+    PaymentEnvironmentVariable,
+)
+from .serializers import (
+    # IMEPaySerializer,
+    # PaymentSerializer,
+    EnvironmentVariableSerializer,
+)
 # from .verify_payment import (
 #     verify_payment
 # )
 # from core.models import PaymentMethod
+
+
+class PaymentEnvironmentVariableAPIViewSet(ModelViewSet):
+    """
+    APIViewSet to manage payment environment variables.
+    """
+    serializer_class = EnvironmentVariableSerializer
+    permission_classes = (IsAdminUser,)
+    queryset = PaymentEnvironmentVariable.objects.all()
+    
 
 
 # class IMEPayTokenCreateAPI(APIView):
