@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 from .models import (
     SiteSetting,
@@ -24,7 +25,31 @@ class TestimonialAdmin(admin.ModelAdmin):
 
 @admin.register(PaymentMethod)
 class PaymentMethodAdmin(admin.ModelAdmin):
-    list_display = ('id' ,'method_name', 'charge')
+    list_display = ('id' ,'method_name', 'charge', 'icon_thumbnail', 'priority')
+    list_filter = ('priority',)
+    search_fields = ('method_name',)
+
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'method_name', 'charge', 'icon', 'priority',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
+    def icon_thumbnail(self, obj):
+        try:
+            img_url=obj.icon.url
+        except :
+            img_url="https://imgur.com/2pO6gCt.png"
+        return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
 
 
 @admin.register(SEOSetting)
