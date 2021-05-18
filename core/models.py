@@ -51,6 +51,7 @@ class SocialLinkSetting(models.Model):
 
 class PaymentMethod(TimeStampedModel):
     method_name = models.CharField(_('method name'), max_length=128, unique=True)
+    slug = models.CharField(_('slug'), max_length=128, unique=True)
     charge = models.PositiveIntegerField(
         _('charge'),
         default=0,
@@ -72,6 +73,8 @@ class PaymentMethod(TimeStampedModel):
         return f'{self.method_name}'
 
     def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.method_name)
         if self.icon:
             new_image = compress(self.icon)
             self.icon = new_image

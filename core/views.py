@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.db import IntegrityError
 from django.template.loader import render_to_string
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status, filters
@@ -166,7 +167,16 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = self.serializer_class(data=request.data, context={'request':request})
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        try:
+            serializer.save()
+        except IntegrityError:
+            return Response(
+                {
+                    'message': 'duplicate key value violates unique constraint.'
+                },
+                status.HTTP_418_IM_A_TEAPOT
+            )
+
         return Response(
             {
                 'message': 'Successfully Added Payment Method',

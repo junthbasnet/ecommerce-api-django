@@ -10,6 +10,9 @@ from .models import (
     PaymentMethod,
     Testimonial,
 )
+from .utils import (
+    validate_method_name,
+)
 
 
 class SiteSettingSerializer(serializers.ModelSerializer):
@@ -76,6 +79,6 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
         """
         Check if payment environment variables are set.
         """
-        print(data.get('method_name'))
+        validate_method_name(data.get('method_name'))
         return data
 

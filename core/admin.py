@@ -28,12 +28,13 @@ class PaymentMethodAdmin(admin.ModelAdmin):
     list_display = ('id' ,'method_name', 'charge', 'icon_thumbnail', 'priority')
     list_filter = ('priority',)
     search_fields = ('method_name',)
+    prepopulated_fields = {'slug': ('method_name',)}
 
     fieldsets = (
         (
             'General', {
             'fields': (
-                'method_name', 'charge', 'icon', 'priority',
+                'method_name', 'slug', 'charge', 'icon', 'priority',
             )
         }),
         (
