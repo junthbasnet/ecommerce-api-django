@@ -1,12 +1,34 @@
-# from django.contrib import admin
-# from .models import (
-#     IMEPay,
-#     KhaltiPayment,
-#     FonepayPayment,
-#     EsewaPayment,
-#     CardPayment,
-#     Payment,
-# )
+from django.contrib import admin
+from .models import (
+    # IMEPay,
+    # KhaltiPayment,
+    # FonepayPayment,
+    # EsewaPayment,
+    # CardPayment,
+    # Payment,
+    PaymentEnvironmentVariable,
+)
+
+
+@admin.register(PaymentEnvironmentVariable)
+class PaymentEnvironmentVariableAdmin(admin.ModelAdmin):
+    list_display = ('id', 'key', 'value',)
+    search_fields = ('key',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'key', 'value',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
 
 # @admin.register(IMEPay)
 # class IMEPayAdmin(admin.ModelAdmin):
