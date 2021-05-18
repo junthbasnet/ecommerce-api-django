@@ -1,7 +1,13 @@
 from django.db import models
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
 
-from common.models import SEOBaseModel, TimeStampedModel, BaseModel, Category
+from common.models import (
+    SEOBaseModel,
+    TimeStampedModel,
+    BaseModel,
+    Category
+)
 from common.managers import DefaultManager
 from common.utils import compress
 
@@ -44,12 +50,26 @@ class SocialLinkSetting(models.Model):
 
 
 class PaymentMethod(TimeStampedModel):
-    method_name = models.CharField(max_length=100)
-    charge = models.PositiveIntegerField(help_text='Charge')
-    icon = models.ImageField(null=True, blank=True, upload_to='settings')
+    method_name = models.CharField(_('method name'), max_length=128)
+    charge = models.PositiveIntegerField(
+        _('charge'),
+        default=0,
+        help_text=_('charge that gets added up during checkout.')
+    )
+    icon = models.ImageField(null=True, blank=True, upload_to='payment_methods')
+    priority = models.PositiveIntegerField(
+        _('priority'),
+        default=0,
+        help_text=_('Higher the priority, first it comes in listing.')
+    )
+
+    class Meta:
+        verbose_name = _('Payment Method')
+        verbose_name_plural = _('Payment Methods')
+        ordering = ('-priority',)
 
     def __str__(self):
-        return f'{self.method_name} Charge: {self.charge}'
+        return f'{self.method_name}'
 
     def save(self, *args, **kwargs):
         if self.icon:
