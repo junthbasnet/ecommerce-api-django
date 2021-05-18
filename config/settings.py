@@ -64,6 +64,7 @@ SYSTEM_APPS = [
     'notifications',
     'products',
     'users',
+    'payments',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + VENDOR_APPS + SYSTEM_APPS
