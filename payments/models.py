@@ -21,7 +21,6 @@ class PaymentEnvironmentVariable(TimeStampedModel):
         return f'{self.key}'
 
 
-
 # class IMEPay(BaseModel):
 #     user = models.ForeignKey('users.User', on_delete=models.SET_NULL, blank=True, null=True)
 #     ref_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -42,15 +41,17 @@ class PaymentEnvironmentVariable(TimeStampedModel):
 #         ordering = ('-created_on',)
 
 
-# class EsewaPayment(BaseModel):
-#     user = models.ForeignKey('users.User', on_delete=models.SET_NULL, blank=True, null=True)
-#     amount = models.CharField(max_length=100)
-#     pid = models.CharField(max_length=50)
-#     rid = models.CharField(max_length=50)
-#     status = models.CharField(max_length=50)
+class EsewaPayment(BaseModel):
+    user = models.ForeignKey('users.User', on_delete=models.SET_NULL, blank=True, null=True)
+    amount = models.CharField(max_length=100)
+    pid = models.CharField(max_length=50)
+    rid = models.CharField(max_length=50)
+    status = models.CharField(max_length=50)
 
-#     class Meta:
-#         ordering = ('-created_on',)
+    class Meta:
+        verbose_name = _('Esewa')
+        verbose_name_plural = _('Esewa')
+        ordering = ('-created_on',)
 
 
 # class FonepayPayment(BaseModel):

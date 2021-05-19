@@ -3,7 +3,7 @@ from .models import (
     # IMEPay,
     # KhaltiPayment,
     # FonepayPayment,
-    # EsewaPayment,
+    EsewaPayment,
     # CardPayment,
     # Payment,
     PaymentEnvironmentVariable,
@@ -50,11 +50,12 @@ class PaymentEnvironmentVariableAdmin(admin.ModelAdmin):
 #     list_display = ('user', 'created_on', 'amount', 'transaction_id', 'req_reference_number', 'auth_trans_ref_no')
 #     search_fields = ('amount', 'transaction_id', 'req_reference_number', 'auth_trans_ref_no', 'user')
 
-# @admin.register(EsewaPayment)
-# class EsewaAdmin(admin.ModelAdmin):
-#     list_display = ('user', 'created_on', 'amount', 'pid', 'rid', 'status')
-#     list_filter = ('status', 'user',)
-#     search_fields = ('pid', 'ride')
+@admin.register(EsewaPayment)
+class EsewaAdmin(admin.ModelAdmin):
+    list_display = ('user', 'created_on', 'amount', 'pid', 'rid', 'status')
+    list_filter = ('status', 'user',)
+    search_fields = ('pid', 'rid', 'user',)
+
 
 # @admin.register(FonepayPayment)
 # class FonepayAdmin(admin.ModelAdmin):
