@@ -6,6 +6,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from common.models import TimeStampedModel
 
 
 class UserManager(BaseUserManager):
@@ -90,4 +91,34 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+
+class Shipping(TimeStampedModel):
+    """
+    Model to store user's shipping information.
+    """
+    user = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='shippings',
+    )
+    area = models.ForeignKey(
+        'core.Area',
+        on_delete=models.CASCADE,
+        related_name='area_shippings',
+    )
+    street_address = models.CharField(max_length=512, default="")
+    postal_code = models.CharField(max_length=255, default="")
+    first_name = models.CharField(max_length=64, blank=True, default="")
+    last_name = models.CharField(max_length=64, blank=True, default="")
+    email = models.EmailField(_('email address'))
+    phone_no = models.CharField(max_length=50, default="", blank=True)
+    is_default = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = _('Shipping')
+        verbose_name_plural = _('Shipping')
+        ordering = ('-created_on',)
+    
+    def __str__(self):
+        return f'{self.street_address}'
 

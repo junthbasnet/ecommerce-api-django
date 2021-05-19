@@ -14,10 +14,12 @@ from rest_framework.filters import SearchFilter
 from .permissions import (
     IsOwnerOrReadOnly,
 )
+from .models import Shipping
 from .serializers import (
     UserAuthTokenSerializer,
     UserSerializer,
     UserRegisterSerializer,
+    ShippingSerializer
 )
 
 User = get_user_model()
@@ -131,6 +133,42 @@ class ObtainAuthTokenView(ObtainAuthToken):
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
                 'user': user_serializer.data
+            },
+            status.HTTP_200_OK
+        )
+
+
+class ShippingAPIViewSet(viewsets.ModelViewSet):
+    """
+    Viewset to add, update, list and delete shippings of logged in user.
+    """
+    serializer_class = ShippingSerializer
+    queryset = Shipping.objects.none()
+    permission_classes = (
+        IsAuthenticated,
+    )
+
+    def get_queryset(self):
+        return self.request.user.shippings.all()
+
+    def perform_create(self, serializer):
+        is_default = serializer.validated_data.get('is_default')
+        if is_default:
+            self.get_queryset().update(is_default=False)
+        serializer.save(user=self.request.user)
+    
+    def perform_update(self, serializer):
+        if serializer.validated_data.get('is_default'):
+            self.get_queryset().exclude(pk=self.kwargs.get('pk')).update(is_default=False)
+        serializer.save()
+
+
+class TokenCheckAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
+        return Response(
+            {
+                'message':'Token Valid'
             },
             status.HTTP_200_OK
         )

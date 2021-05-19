@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 User = get_user_model()
+from .models import Shipping
 
 
 class UserCreationForm(forms.ModelForm):
@@ -62,3 +63,24 @@ class UserAdmin(UserAdmin):
 
 
 admin.site.register(User, UserAdmin)
+
+
+@admin.register(Shipping)
+class ShippingAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'area','street_address','is_default',)
+    search_fields = ('user__email', 'first_name', 'phone_no', 'email','street_address', )
+    list_filter = ('area', 'is_default',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'user', 'area', 'street_address', 'postal_code', 'first_name', 'last_name', 'email', 'phone_no', 'is_default',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )

@@ -8,6 +8,7 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from users.helpers import validate_id_token
 from .models import (
     User,
+    Shipping
 )
 
 
@@ -112,3 +113,21 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user.save()
         attrs['user'] = user
         return attrs
+
+
+class ShippingSerializer(serializers.ModelSerializer):
+    """
+    Serializes Shipping model instances
+    """
+    province_name = serializers.CharField(source='area.city.province.name', read_only=True)
+    province_id = serializers.CharField(source='area.city.province.pk', read_only=True)
+    city_name = serializers.CharField(source='area.city.name', read_only=True)
+    city_id = serializers.CharField(source='area.city.pk', read_only=True)
+    area_name = serializers.CharField(source='area.name', read_only=True)
+    phone_no = serializers.CharField(required=True)
+    class Meta:
+        model = Shipping
+        fields = '__all__'
+        read_only_fields = (
+            'user',
+        )
