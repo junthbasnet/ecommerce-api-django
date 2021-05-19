@@ -18,6 +18,9 @@ from .models import (
     FAQCategory,
     PaymentMethod,
     Testimonial,
+    Province,
+    City,
+    Area,
 )
 from .serializers import (
     SiteSettingSerializer,
@@ -28,6 +31,9 @@ from .serializers import (
     FAQCategorySerializer,
     PaymentMethodSerializer,
     TestimonialSerializer,
+    ProvinceSerializer,
+    CitySerializer,
+    AreaSerializer,
 )
 
 
@@ -338,4 +344,144 @@ class TestimonialViewSet(viewsets.ModelViewSet):
         return Response(
             {
                 'message': 'Deleted Successfully'
+            }, status.HTTP_204_NO_CONTENT)
+
+
+class ProvinceAPIViewSet(viewsets.ModelViewSet):
+    '''
+    APIViewSet that manages province (region).
+    '''
+    permission_classes = (IsAdminUserOrReadOnly,)
+    queryset = Province.objects.all()
+    serializer_class = ProvinceSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    ordering_fields = ['name', ]
+    search_fields = ['name', ]
+
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            obj = serializer.save()
+            return Response(
+                {
+                    'message': 'Successfully Added Province',
+                    'data': serializer.data
+                }, status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        faq = self.get_object()
+        serializer = self.serializer_class(faq, data=request.data)
+        if serializer.is_valid():
+            obj = serializer.save()
+            return Response(
+                {
+                    'message': 'Successfully Edited Province',
+                    'data': serializer.data
+                }, status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        name = instance.name
+        self.perform_destroy(instance)
+        return Response(
+            {
+                'message': f'{name} Deleted Successfully'
+            }, status.HTTP_204_NO_CONTENT)
+
+
+class CityAPIViewSet(viewsets.ModelViewSet):
+    '''
+    APIViewSet that manages city.
+    '''
+    permission_classes = (IsAdminUserOrReadOnly,)
+    queryset = City.objects.all()
+    serializer_class = CitySerializer
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter]
+    ordering_fields = ['name', ]
+    filterset_fields = ('province',)
+    search_fields = ['name', ]
+
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            obj = serializer.save()
+            return Response(
+                {
+                    'message': 'Successfully Added City',
+                    'data': serializer.data
+                }, status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        faq = self.get_object()
+        serializer = self.serializer_class(faq, data=request.data)
+        if serializer.is_valid():
+            obj = serializer.save()
+            return Response(
+                {
+                    'message': 'Successfully Edited City',
+                    'data': serializer.data
+                }, status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        name = instance.name
+        self.perform_destroy(instance)
+        return Response(
+            {
+                'message': f'{name} Deleted Successfully'
+            }, status.HTTP_204_NO_CONTENT)
+
+
+class AreaAPIViewSet(viewsets.ModelViewSet):
+    '''
+    APIViewSet that manages area.
+    '''
+    permission_classes = (IsAdminUserOrReadOnly,)
+    queryset = Area.objects.all()
+    serializer_class = AreaSerializer
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter]
+    ordering_fields = ['name', ]
+    filterset_fields = ('city__province', 'city')
+    search_fields = ['name', ]
+
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            obj = serializer.save()
+            return Response(
+                {
+                    'message': 'Successfully Added Area',
+                    'data': serializer.data
+                }, status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        faq = self.get_object()
+        serializer = self.serializer_class(faq, data=request.data)
+        if serializer.is_valid():
+            obj = serializer.save()
+            return Response(
+                {
+                    'message': 'Successfully Edited Area',
+                    'data': serializer.data
+                }, status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        name = instance.name
+        self.perform_destroy(instance)
+        return Response(
+            {
+                'message': f'{name} Deleted Successfully'
             }, status.HTTP_204_NO_CONTENT)

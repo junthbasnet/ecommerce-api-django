@@ -7,6 +7,9 @@ from .views import (
     FAQViewSet,
     PaymentMethodViewSet,
     TestimonialViewSet,
+    ProvinceAPIViewSet,
+    CityAPIViewSet,
+    AreaAPIViewSet,
 )
 
 router = DefaultRouter()
@@ -16,3 +19,6 @@ router.register('faq-category', FAQCategoryViewSet)
 router.register('faq', FAQViewSet)
 router.register('payment-methods', PaymentMethodViewSet)
 router.register('testimonial', TestimonialViewSet)
+router.register('province', TestimonialViewSet)
+router.register('cities', TestimonialViewSet)
+router.register('areas', TestimonialViewSet)

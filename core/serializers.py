@@ -9,6 +9,9 @@ from .models import (
     FAQCategory,
     PaymentMethod,
     Testimonial,
+    Province,
+    City,
+    Area,
 )
 from .utils import (
     validate_method_name,
@@ -84,4 +87,35 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
         validate_method_name(data.get('method_name'))
         is_environment_variables_set(data.get('method_name'))
         return data
+
+
+class ProvinceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Province
+        exclude = (
+            'modified_on',
+            'created_on',
+        )
+
+
+class CitySerializer(serializers.ModelSerializer):
+    province_name = serializers.CharField(source='province.name', read_only=True)
+    class Meta:
+        model = City
+        exclude = (
+            'modified_on',
+            'created_on',
+        )
+
+
+class AreaSerializer(serializers.ModelSerializer):
+    province_name = serializers.CharField(source='city.province.name', read_only=True)
+    city_name = serializers.CharField(source='city.name', read_only=True)
+
+    class Meta:
+        model = Area
+        exclude = (
+            'modified_on',
+            'created_on',
+        )
 
