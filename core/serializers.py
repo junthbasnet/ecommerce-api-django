@@ -12,6 +12,7 @@ from .models import (
 )
 from .utils import (
     validate_method_name,
+    is_environment_variables_set,
 )
 
 
@@ -79,6 +80,8 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
         """
         Check if payment environment variables are set.
         """
+
         validate_method_name(data.get('method_name'))
+        is_environment_variables_set(data.get('method_name'))
         return data
 

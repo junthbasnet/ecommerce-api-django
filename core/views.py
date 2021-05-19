@@ -167,16 +167,7 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = self.serializer_class(data=request.data, context={'request':request})
         serializer.is_valid(raise_exception=True)
-        try:
-            serializer.save()
-        except IntegrityError:
-            return Response(
-                {
-                    'message': 'duplicate key value violates unique constraint.'
-                },
-                status.HTTP_418_IM_A_TEAPOT
-            )
-
+        serializer.save()
         return Response(
             {
                 'message': 'Successfully Added Payment Method',
