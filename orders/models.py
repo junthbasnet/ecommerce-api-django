@@ -17,8 +17,8 @@ class PromoCode(TimeStampedModel):
     end_date = models.DateField(_('end date'))
 
     class Meta:
-        verbose_name = _('Coupon')
-        verbose_name_plural = _('Coupons')
+        verbose_name = _('Promo-Code')
+        verbose_name_plural = _('Promo-Code')
         ordering = ('-start_date',)
 
     @property
