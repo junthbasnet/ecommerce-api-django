@@ -5,7 +5,7 @@ from .models import (
     # FonepayPayment,
     EsewaPayment,
     # CardPayment,
-    # Payment,
+    Payment,
     PaymentEnvironmentVariable,
 )
 
@@ -63,7 +63,28 @@ class EsewaAdmin(admin.ModelAdmin):
 #     list_filter = ('status', 'user',)
 #     search_fields = ('prn', )
 
-# @admin.register(Payment)
-# class PaymentAdmin(admin.ModelAdmin):
-#     list_display = ('id', 'user', 'method', 'payment_uuid', 'payment_status', 'amount', 'currency', 'order_assigned', 'status_code')
-#     list_filter = ('user', 'method', 'payment_status', 'currency', 'order_assigned', 'status_code')
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'user', 'method', 'payment_uuid', 'payment_status', 
+        'amount', 'currency', 'order_assigned', 'status_code',
+    )
+    list_filter = (
+        'user', 'method', 'payment_status', 'currency',
+        'order_assigned', 'status_code',
+    )
+    search_fields = ('user__email', 'payment_uuid', 'method__method_name')
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'user', 'method', 'payment_status', 'status_code', 'amount', 'currency', 'payment_uuid', 'order_assigned',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on', 'deleted_on', 'is_deleted',
+            ),
+        }),
+    )

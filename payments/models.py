@@ -79,28 +79,28 @@ class EsewaPayment(BaseModel):
 #         return f'{self.transaction_id}-{self.amount}'
 
 
-# class Payment(BaseModel):
-#     PAYMENT_STATUS = (
-#         ('unverified', 'unverified'),
-#         ('verified', 'verified'),
-#     )
-#     CURRENCY = (
-#         ('NPR', 'NPR'),
-#         ('USD', 'USD')
-#     )
-#     STATUS_CODES = (
-#         ('CREATED', 'CREATED'),
-#         ('MERCHANT_VERIFICATION_FAILED', 'MERCHANT_VERIFICATION_FAILED'),
-#         ('NOT_FOUND', 'NOT_FOUND'),        
-#     )
-#     user = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True, related_name='user_payments')
-#     method = models.ForeignKey('core.PaymentMethod', on_delete=models.SET_NULL, null=True, related_name='method_payments')
-#     payment_status = models.CharField(max_length=31, choices=PAYMENT_STATUS)
-#     status_code = models.CharField(max_length=31, choices=STATUS_CODES, default='CREATED')
-#     amount = models.DecimalField(default=0, decimal_places=2, max_digits=12)
-#     currency = models.CharField(max_length=7, choices= CURRENCY, default='NPR')
-#     payment_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-#     order_assigned = models.BooleanField(default=False, blank=True)
+class Payment(BaseModel):
+    PAYMENT_STATUS = (
+        ('unverified', 'unverified'),
+        ('verified', 'verified'),
+    )
+    CURRENCY = (
+        ('NPR', 'NPR'),
+        ('USD', 'USD')
+    )
+    STATUS_CODES = (
+        ('CREATED', 'CREATED'),
+        ('MERCHANT_VERIFICATION_FAILED', 'MERCHANT_VERIFICATION_FAILED'),
+        ('NOT_FOUND', 'NOT_FOUND'),        
+    )
+    user = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True, related_name='user_payments')
+    method = models.ForeignKey('core.PaymentMethod', on_delete=models.SET_NULL, null=True, related_name='method_payments')
+    payment_status = models.CharField(max_length=31, choices=PAYMENT_STATUS)
+    status_code = models.CharField(max_length=31, choices=STATUS_CODES, default='CREATED')
+    amount = models.DecimalField(default=0, decimal_places=2, max_digits=12)
+    currency = models.CharField(max_length=7, choices= CURRENCY, default='NPR')
+    payment_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    order_assigned = models.BooleanField(default=False, blank=True)
 
-#     def __str__(self):
-#         return f'Payment for {self.payment_uuid}'
+    def __str__(self):
+        return f'{self.payment_uuid}'
