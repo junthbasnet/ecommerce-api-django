@@ -21,24 +21,28 @@ class PaymentEnvironmentVariable(TimeStampedModel):
         return f'{self.key}'
 
 
-# class IMEPay(BaseModel):
-#     user = models.ForeignKey('users.User', on_delete=models.SET_NULL, blank=True, null=True)
-#     ref_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-#     is_ref_id_available = models.BooleanField(default=True)
-#     amount = models.DecimalField(default=0, decimal_places=2, max_digits=10)
+class IMEPay(BaseModel):
+    user = models.ForeignKey('users.User', on_delete=models.SET_NULL, blank=True, null=True)
+    ref_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    is_ref_id_available = models.BooleanField(default=True)
+    amount = models.DecimalField(default=0, decimal_places=2, max_digits=10)
 
-#     def __str__(self):
-#         return f'{self.ref_id}-{self.is_ref_id_available}'
+    class Meta:
+        verbose_name = _('IMEPay')
+        verbose_name_plural = _('IMEPay')
+        ordering = ('-created_on',)
 
 
-# class KhaltiPayment(BaseModel):
-#     user = models.ForeignKey('users.User', on_delete=models.SET_NULL, blank=True, null=True)
-#     token = models.CharField(max_length=200)
-#     amount = models.CharField(max_length=100)
-#     status = models.CharField(max_length=10)
+class KhaltiPayment(BaseModel):
+    user = models.ForeignKey('users.User', on_delete=models.SET_NULL, blank=True, null=True)
+    token = models.CharField(max_length=200)
+    amount = models.CharField(max_length=100)
+    status = models.CharField(max_length=10)
 
-#     class Meta:
-#         ordering = ('-created_on',)
+    class Meta:
+        verbose_name = _('Khalti')
+        verbose_name_plural = _('Khalti')
+        ordering = ('-created_on',)
 
 
 class EsewaPayment(BaseModel):
@@ -54,29 +58,33 @@ class EsewaPayment(BaseModel):
         ordering = ('-created_on',)
 
 
-# class FonepayPayment(BaseModel):
-#     user = models.ForeignKey('users.User', on_delete=models.SET_NULL, blank=True, null=True)
-#     amount = models.CharField(max_length=100)
-#     prn = models.CharField(max_length=100)
-#     bid = models.CharField(max_length=100)
-#     uid = models.CharField(max_length=100)
-#     bank = models.CharField(max_length=100)
-#     status = models.CharField(max_length=10)
+class FonepayPayment(BaseModel):
+    user = models.ForeignKey('users.User', on_delete=models.SET_NULL, blank=True, null=True)
+    amount = models.CharField(max_length=100)
+    prn = models.CharField(max_length=100)
+    bid = models.CharField(max_length=100)
+    uid = models.CharField(max_length=100)
+    bank = models.CharField(max_length=100)
+    status = models.CharField(max_length=10)
 
-#     class Meta:
-#         ordering = ('-created_on',)
+    class Meta:
+        verbose_name = _('Fonepay')
+        verbose_name_plural = _('Fonepay')
+        ordering = ('-created_on',)
 
 
-# class CardPayment(BaseModel):
-#     user = models.ForeignKey('users.User', on_delete=models.SET_NULL, blank=True, null=True)
-#     auth_trans_ref_no = models.CharField(max_length=255)
-#     transaction_id = models.CharField(max_length=255)
-#     req_reference_number = models.CharField(max_length=255)
-#     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-#     created_on = models.DateTimeField(auto_now_add=True)
+class CardPayment(BaseModel):
+    user = models.ForeignKey('users.User', on_delete=models.SET_NULL, blank=True, null=True)
+    auth_trans_ref_no = models.CharField(max_length=255)
+    transaction_id = models.CharField(max_length=255)
+    req_reference_number = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    created_on = models.DateTimeField(auto_now_add=True)
 
-#     def __str__(self):
-#         return f'{self.transaction_id}-{self.amount}'
+    class Meta:
+        verbose_name = _('CyberSource')
+        verbose_name_plural = _('CyberSource')
+        ordering = ('-created_on',)
 
 
 class Payment(BaseModel):
