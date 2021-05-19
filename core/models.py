@@ -121,3 +121,61 @@ class Testimonial(models.Model):
 
     def __str__(self):
         return self.full_name
+
+
+class Province(TimeStampedModel):
+    """
+    Model to store Province information for shipping.
+    """
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return f'{self.name}'
+
+    class Meta:
+        verbose_name='Province'
+        verbose_name_plural = 'Province'
+        ordering = ('-created_on',)
+
+
+class City(TimeStampedModel):
+    """
+    Model to store city information for shipping charges.
+    """
+    name = models.CharField(max_length=255, unique=True)
+    province = models.ForeignKey(
+        Province,
+        on_delete=models.PROTECT,
+        related_name="cities",
+    )
+
+    def __str__(self):
+        return f'{self.name}'
+
+    class Meta:
+        verbose_name = 'City'
+        verbose_name_plural = 'Cities'
+        ordering = ('-created_on',)
+
+
+class Area(TimeStampedModel):
+    """
+    Model to store city information for shipping.
+    """
+    name = models.CharField(max_length=255, unique=True)
+    city = models.ForeignKey(
+        City,
+        on_delete=models.PROTECT,
+        related_name="areas",
+    )
+    delivery_duration = models.PositiveIntegerField(default=3)
+
+    def __str__(self):
+        return f'{self.name}'
+
+    class Meta:
+        verbose_name='Area'
+        verbose_name_plural = 'Areas'
+        ordering = ('-created_on',)
+
+        

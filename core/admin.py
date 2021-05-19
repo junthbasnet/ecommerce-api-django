@@ -10,6 +10,9 @@ from .models import (
     FAQ,
     PaymentMethod,
     Testimonial,
+    Province,
+    City,
+    Area,
 )
 
 
@@ -83,3 +86,65 @@ class SlideshowAdmin(admin.ModelAdmin):
     list_display = ('link', 'caption', 'is_active',)
     exclude = ['modified_on', 'created_on', ]
     list_filter = ('is_active',)
+
+
+@admin.register(Province)
+class ProvinceAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+    search_fields = ('name',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'name',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
+
+@admin.register(City)
+class CityAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'province')
+    list_filter = ('province',)
+    search_fields = ('name',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'name', 'province',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
+
+@admin.register(Area)
+class CityAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'city', 'delivery_duration',)
+    list_filter = ('city',)
+    search_fields = ('name',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'name', 'city', 'delivery_duration',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
