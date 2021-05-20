@@ -136,6 +136,25 @@ class CheckOutCreateAPIView(CreateAPIView):
         }
 
 
+class UserOrderListAPIView(ListAPIView):
+    """
+    APIView that lists user orders.
+    """
+    serializer_class = OrderSerializer
+    queryset = Order.objects.none()
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('delivery_status',)
+
+    def get_queryset(self):
+        return self.request.user.orders.all()
+    
+
+
+
+
+
+
+
 
 
             

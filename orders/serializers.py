@@ -10,6 +10,10 @@ from .utils import (
     validate_final_price_with_payment_obj,
     is_quantity_less_than_or_equal_to,
 )
+from users.serializers import (
+    UserSerializer,
+    ShippingSerializer,
+)
 
 
 class PromoCodeSerializer(serializers.ModelSerializer):
@@ -36,17 +40,26 @@ class OrderSerializer(serializers.ModelSerializer):
     Serializes Order model instances.
     """
     payment_uuid = serializers.CharField(max_length=63, write_only=True, required=True)
-    cart_items = serializers.ListField(allow_empty=False)
-
+    cart_items = serializers.ListField(allow_empty=False, write_only=True)
+    products = OrderProductSerializer(many=True, read_only=True)
+    user = serializers.SerializerMethodField()
+    shipping_data = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = (
             'id', 'order_uuid', 'user', 'payment', 'delivery_status', 'estimated_delivery_date', 'shipping', 'discount', 'delivery_charge', 'final_price', 'cart_items', 'payment_uuid',
+            'products', 'shipping_data', 'created_on', 'modified_on',
         )
         read_only_fields = (
             'order_uuid', 'user', 'payment', 'delivery_status',
         )
+    
+    def get_user(self, obj):
+        return UserSerializer(self.context['request'].user).data
+
+    def get_shipping_data(self, obj):
+        return ShippingSerializer(obj.shipping).data
     
     def validate(self, data):
         """
