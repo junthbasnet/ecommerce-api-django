@@ -11,6 +11,7 @@ from .models import (
     ProductImage,
     Question,
     Answer,
+    RatingAndReview,
 )
 
 
@@ -31,7 +32,8 @@ class CategoryAdmin(admin.ModelAdmin):
         (
             'SEO', {
             'fields': (
-                'og_url', 'og_title', 'og_description', 'og_image', 'meta_title', 'meta_description', 'keywords', 'tags',
+                'og_url', 'og_title', 'og_description', 'og_image',
+                'meta_title', 'meta_description', 'keywords', 'tags',
             ),
         }),
         (
@@ -123,7 +125,8 @@ class ProductAdmin(admin.ModelAdmin):
         (
             'SEO', {
             'fields': (
-                'og_url', 'og_title', 'og_description', 'og_image', 'meta_title', 'meta_description', 'keywords', 'tags',
+                'og_url', 'og_title', 'og_description', 'og_image',
+                'meta_title', 'meta_description', 'keywords', 'tags',
             ),
         }),
         (
@@ -246,5 +249,33 @@ class AnswerAdmin(admin.ModelAdmin):
             ),
         }),
     )
+
+
+@admin.register(RatingAndReview)
+class RatingAndReviewAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'product', 'rating', 'review', 'image_thumbnail')
+    list_filter = ('product',)
+    search_fields = ('user__email', 'product__name', )
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'user', 'product', 'rating', 'review', 'image',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
+    def image_thumbnail(self, obj):
+        try:
+            img_url=obj.image.url
+        except :
+            img_url="https://imgur.com/2pO6gCt.png"
+        return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
 
 
