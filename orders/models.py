@@ -119,6 +119,7 @@ class Order(BaseModel):
         default='Pending'
     )
     estimated_delivery_date = models.DateField(_('estimated delivery date'), default=None, null=True)
+    delivered_at = models.DateField(_('delivered at'), default=None, null=True)
     shipping = models.ForeignKey(
         'users.Shipping',
         on_delete=models.SET_NULL,

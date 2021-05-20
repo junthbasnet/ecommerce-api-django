@@ -32,7 +32,7 @@ class PromoCodeAdmin(admin.ModelAdmin):
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'user', 'payment', 'delivery_status',
-        'estimated_delivery_date', 'shipping', 'order_uuid', 'discount',
+        'estimated_delivery_date', 'delivered_at', 'shipping', 'order_uuid', 'discount',
         'delivery_charge', 'final_price'
     )
     list_filter = ('delivery_status', 'payment__method')
@@ -41,7 +41,7 @@ class OrderAdmin(admin.ModelAdmin):
         (
             'General', {
             'fields': (
-                'user', 'payment', 'delivery_status', 'estimated_delivery_date', 'shipping',
+                'user', 'payment', 'delivery_status', 'estimated_delivery_date','delivered_at', 'shipping',
                 'order_uuid', 'discount', 'delivery_charge', 'final_price'
             )
         }),

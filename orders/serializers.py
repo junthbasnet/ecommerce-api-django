@@ -48,11 +48,13 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
-            'id', 'order_uuid', 'user', 'payment', 'delivery_status', 'estimated_delivery_date', 'shipping', 'discount', 'delivery_charge', 'final_price', 'cart_items', 'payment_uuid',
-            'products', 'shipping_data', 'created_on', 'modified_on',
+            'id', 'order_uuid', 'user', 'payment', 'delivery_status', 'estimated_delivery_date',
+            'delivered_at', 'shipping', 'discount', 'delivery_charge', 'final_price', 'cart_items',
+            'payment_uuid', 'products', 'shipping_data', 'created_on', 'modified_on',
         )
         read_only_fields = (
-            'order_uuid', 'user', 'payment', 'delivery_status',
+            'order_uuid', 'user', 'payment', 'delivery_status', 'estimated_delivery_date',
+            'delivered_at',
         )
     
     def get_user(self, obj):
