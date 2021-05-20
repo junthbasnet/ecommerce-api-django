@@ -11,6 +11,10 @@ from rest_framework.generics import (
     ListAPIView, 
     RetrieveAPIView
 )
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAdminUser,
+)
 from rest_framework.views import APIView
 from .models import (
     PromoCode,
@@ -136,17 +140,23 @@ class CheckOutCreateAPIView(CreateAPIView):
         }
 
 
-class UserOrderListAPIView(ListAPIView):
+class OrderListAPIView(ListAPIView):
     """
     APIView that lists user orders.
     """
     serializer_class = OrderSerializer
     queryset = Order.objects.none()
-    filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('delivery_status',)
+    permission_classes = (IsAuthenticated,)
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    search_fields = ('order_uuid', )
+    ordering_fields = ('name', 'created_on', 'delivered_at')
+    filterset_fields = ('delivery_status', 'user',)
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return Order.objects.all()
         return self.request.user.orders.all()
+
     
 
 
