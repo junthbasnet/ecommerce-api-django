@@ -119,6 +119,12 @@ class Order(BaseModel):
         default='Pending'
     )
     estimated_delivery_date = models.DateField(_('estimated delivery date'), default=None, null=True)
+    shipping = models.ForeignKey(
+        'users.Shipping',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='orders'
+    )
     order_uuid = models.CharField(_('order uuid'), max_length=255, unique=True)
     discount = models.DecimalField(
         _('discount'),
