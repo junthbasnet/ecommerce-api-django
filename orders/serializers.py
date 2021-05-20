@@ -37,6 +37,8 @@ class OrderSerializer(serializers.ModelSerializer):
     """
     payment_uuid = serializers.CharField(max_length=63, write_only=True, required=True)
     cart_items = serializers.ListField(allow_empty=False)
+
+
     class Meta:
         model = Order
         fields = (
@@ -56,9 +58,19 @@ class OrderSerializer(serializers.ModelSerializer):
         delivery_charge = data.get('delivery_charge', 0)
         discount = data.get('discount', 0)
         cart_items = data.get('cart_items')
+        shipping = data.get('shipping', None)
+        if not shipping:
+            raise serializers.ValidationError(
+                {
+                    'error_message': [
+                        f"shipping id is needed."
+                    ]
+                },
+                code='no_shipping'
+            )
 
         payment_obj = validate_payment(payment_uuid, user)
-        # payment_obj.order_assigned=True
+        payment_obj.order_assigned=True
         payment_obj.save()
 
         is_quantity_less_than_or_equal_to(cart_items)
@@ -66,6 +78,7 @@ class OrderSerializer(serializers.ModelSerializer):
         validate_final_price_with_payment_obj(payment_obj, delivery_charge, discount, cart_items)
 
         data['final_price'] = payment_obj.amount
+        data['payment_obj'] = payment_obj
         return data
     
 

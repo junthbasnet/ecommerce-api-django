@@ -22,6 +22,11 @@ from .serializers import (
     OrderSerializer,
     OrderProductSerializer,
 )
+from .utils import (
+    get_product_obj,
+)
+
+ORDER_PREFIX = 'NEBUYO-ORDER-'
 
 
 class PromoCodeAPIViewSet(ModelViewSet):
@@ -77,11 +82,50 @@ class CheckOutCreateAPIView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # self.perform_create(serializer)
+        self.perform_create_order(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def perform_create(self, serializer):
-        serializer.save()
+    def perform_create_order(self, serializer):
+
+        payment_obj = serializer.validated_data.get('payment_obj')
+        final_price = serializer.validated_data.get('final_price')
+        shipping = serializer.validated_data.get('shipping')
+
+        order_obj = Order.objects.create(
+            user = self.request.user,
+            payment = payment_obj,
+            shipping = shipping,
+            discount = serializer.validated_data.get('discount', 0),
+            delivery_charge = serializer.validated_data.get('delivery_charge', 0),
+            final_price = final_price
+        )
+        order_obj.order_uuid = ORDER_PREFIX + str(order_obj.pk)
+        order_obj.save()
+        self.perform_create_order_product(serializer, order_obj)
+
+    def perform_create_order_product(self, serializer, order_obj):
+        """
+        Create order product object.
+        """
+        cart_items = serializer.validated_data.get('cart_items')
+        for cart_item in cart_items:
+            product_id = cart_item.get('product_id', None)
+            product_quantity = cart_item.get('quantity', None)
+            product_obj = get_product_obj(product_id)
+            rate = product_obj.selling_price
+            net_total = rate * product_quantity
+
+            color = cart_item.get('color', '')
+
+            OrderProduct.objects.create(
+                user = self.request.user,
+                product = product_obj,
+                order = order_obj,
+                color = color,
+                quantity = product_quantity,
+                rate = rate,
+                net_total = net_total,    
+            )
     
     def get_serializer_context(self):
         """

@@ -131,7 +131,7 @@ class Order(BaseModel):
         max_digits=10,
         decimal_places=2,
         default=0,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(0)],
         help_text=_(
             'discount using promo code.'
         )
@@ -141,7 +141,7 @@ class Order(BaseModel):
         max_digits=10,
         decimal_places=2,
         default=0,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(0)],
         help_text=_(
             'discount using promo code.'
         )
