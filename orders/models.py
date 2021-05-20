@@ -47,6 +47,11 @@ class OrderProduct(BaseModel):
         null=True,
         related_name='ordered'
     )
+    order = models.ForeignKey(
+        'orders.Order',
+        on_delete=models.PROTECT,
+        related_name='products'
+    )
     color = models.CharField(_('color'), max_length=64, default='')
     quantity = models.PositiveIntegerField(_('quantity'), default=1, validators=[MinValueValidator(1)])
     rate = models.DecimalField(
@@ -126,7 +131,7 @@ class Order(BaseModel):
         )
     )
     delivery_charge = models.DecimalField(
-        _('discount'),
+        _('delivery charge'),
         max_digits=10,
         decimal_places=2,
         default=0,
@@ -149,6 +154,9 @@ class Order(BaseModel):
         verbose_name = _('Order')
         verbose_name_plural = _('Orders')
         ordering = ('-created_on',)
+    
+    def __str__(self):
+        return f'{self.order_uuid}'
 
 
 

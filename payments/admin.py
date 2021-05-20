@@ -76,6 +76,8 @@ class PaymentAdmin(admin.ModelAdmin):
         'order_assigned', 'status_code',
     )
     search_fields = ('user__email', 'payment_uuid', 'method__method_name')
+    readonly_fields=('payment_uuid',)
+
     fieldsets = (
         (
             'General', {

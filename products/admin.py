@@ -67,7 +67,8 @@ class SubCategoryAdmin(admin.ModelAdmin):
         (
             'SEO', {
             'fields': (
-                'og_url', 'og_title', 'og_description', 'og_image', 'meta_title', 'meta_description', 'keywords', 'tags',
+                'og_url', 'og_title', 'og_description', 'og_image',
+                'meta_title', 'meta_description', 'keywords', 'tags',
             ),
         }),
         (
