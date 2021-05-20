@@ -7,15 +7,20 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import (
     GenericAPIView,
+    CreateAPIView,
     ListAPIView, 
     RetrieveAPIView
 )
 from rest_framework.views import APIView
 from .models import (
     PromoCode,
+    Order,
+    OrderProduct,
 )
 from .serializers import (
     PromoCodeSerializer,
+    OrderSerializer,
+    OrderProductSerializer,
 )
 
 
@@ -60,6 +65,35 @@ class ApplyPromoCodeGenericAPIView(GenericAPIView):
             },
             status.HTTP_406_NOT_ACCEPTABLE
         )
+
+
+class CheckOutCreateAPIView(CreateAPIView):
+    """
+    APIView that manages checkout and creates Order and
+    OrderProduct model instances.
+    """
+    serializer_class = OrderSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def perform_create(self, serializer):
+        serializer.save()
+    
+    def get_serializer_context(self):
+        """
+        Extra context provided to the serializer class.
+        """
+        return {
+            'request': self.request,
+        }
+
+
+
+
             
         
 
