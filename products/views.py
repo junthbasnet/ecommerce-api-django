@@ -16,6 +16,10 @@ from .models import (
     GlobalSpecification,
     Question,
     Answer,
+    RatingAndReview,
+)
+from .permissions import(
+    IsOwnerOrReadOnly,
 )
 from .serializers import (
     CategorySerializer,
@@ -26,9 +30,11 @@ from .serializers import (
     ProductImageSerializer,
     ProductQuestionSerializer,
     ProductAnswerSerializer,
+    RatingAndReviewSerializer,
 )
 from .utils import (
     get_similar_products,
+    get_ordered_product_obj,
 )
 
 
@@ -230,6 +236,51 @@ class SimilarProductsListAPIView(ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+
+class RatingAndReviewAPIViewSet(ModelViewSet):
+    """
+    APIViewSet that manages ratings and reviews.
+    """
+    serializer_class = RatingAndReviewSerializer
+    queryset = RatingAndReview.objects.all()
+    permission_classes = (IsOwnerOrReadOnly,)
+    
+    def create(self, request, *args, **kwargs):
+        ordered_product_id = request.data.get('ordered_product_id')
+        ordered_product_obj = get_ordered_product_obj(ordered_product_id)
+        if ordered_product_obj.user != request.user:
+            return Response(
+                {
+                    'error_message': 'You cannot give review.'
+                },
+                status.HTTP_405_METHOD_NOT_ALLOWED
+            )
+
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.validated_data['ordered_product_obj'] = ordered_product_obj
+        if ordered_product_obj.reviews:
+            return Response(
+                {
+                    'error_message':'Already reviewed. only update'
+                },
+                status.HTTP_418_IM_A_TEAPOT
+            )       
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,)
+
+    def perform_create(self, serializer):
+        ordered_product_obj = serializer.validated_data.get('ordered_product_obj')
+        review_obj = RatingAndReview.objects.create(
+            user=self.request.user,
+            product = ordered_product_obj.product,
+            rating=serializer.validated_data.get('rating', 5),
+            review = serializer.validated_data.get('review'),
+            image = serializer.validated_data.get('image')
+        )         
+        ordered_product_obj.reviews = review_obj
+        ordered_product_obj.save()
 
 
 

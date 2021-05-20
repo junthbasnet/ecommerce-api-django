@@ -47,7 +47,7 @@ class OrderSerializer(serializers.ModelSerializer):
     cart_items = serializers.ListField(allow_empty=False, write_only=True)
     products = OrderProductSerializer(many=True, read_only=True)
     user = serializers.SerializerMethodField()
-    shipping_data = serializers.SerializerMethodField()
+    shipping_data = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Order

@@ -9,6 +9,7 @@ from .models import (
     GlobalSpecification,
     Question,
     Answer,
+    RatingAndReview,
 )
 from users.serializers import UserSerializer
 
@@ -135,6 +136,26 @@ class ProductAnswerSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'user', 'created_on', 'modified_on',
         )
+
+
+class RatingAndReviewSerializer(serializers.ModelSerializer):
+    """
+    Serializes rating and review model instances.
+    """
+    from orders.serializers import (
+        OrderProductSerializer,
+    )
+    ordered_product_id = serializers.IntegerField(min_value=1, write_only=True)
+    on_ordered_product = OrderProductSerializer(read_only=True)
+    class Meta:
+        model = RatingAndReview
+        fields = (
+            'id', 'user', 'product', 'rating', 'review', 'image', 'ordered_product_id', 'on_ordered_product',
+        )
+        read_only_fields = (
+            'user', 'product',
+        )
+
 
 
 

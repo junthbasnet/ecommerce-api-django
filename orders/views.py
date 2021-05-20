@@ -87,7 +87,12 @@ class CheckOutCreateAPIView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create_order(serializer)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "message":"successfully ordered."
+            },
+            status=status.HTTP_201_CREATED
+        )
 
     def perform_create_order(self, serializer):
 
@@ -149,13 +154,34 @@ class OrderListAPIView(ListAPIView):
     permission_classes = (IsAuthenticated,)
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     search_fields = ('order_uuid', )
-    ordering_fields = ('name', 'created_on', 'delivered_at')
+    ordering_fields = ('created_on', 'delivered_at')
     filterset_fields = ('delivery_status', 'user',)
 
     def get_queryset(self):
         if self.request.user.is_staff:
             return Order.objects.all()
         return self.request.user.orders.all()
+
+
+class OrderProductListAPIView(ListAPIView):
+    """
+    APIView that lists user orders.
+    """
+    serializer_class = OrderProductSerializer
+    queryset = OrderProduct.objects.none()
+    permission_classes = (IsAuthenticated,)
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    search_fields = ('order__order_uuid', )
+    ordering_fields = ('created_on', 'delivered_at', 'estimated_delivery_date',)
+    filterset_fields = ('delivery_status', 'user', 'to_be_reviewed',)
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return OrderProduct.objects.all()
+        return self.request.user.ordered_products.all()
+
+
+
 
     
 

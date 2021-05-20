@@ -9,6 +9,7 @@ from .views import (
     SubCategoryAPIViewSet,
     ProductQuestionAPIViewSet,
     ProductAnswerAPIViewSet,
+    RatingAndReviewAPIViewSet,
 )
 
 router = DefaultRouter()
@@ -20,5 +21,6 @@ router.register('specifications', GlobalSpecificationAPIViewSet)
 router.register('images', ProductImageAPIViewSet)
 router.register('questions', ProductQuestionAPIViewSet)
 router.register('answers', ProductAnswerAPIViewSet)
+router.register('reviews', RatingAndReviewAPIViewSet)
 router.register('', ProductAPIViewSet)
 
