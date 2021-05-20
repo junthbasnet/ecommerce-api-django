@@ -14,6 +14,9 @@ from users.serializers import (
     UserSerializer,
     ShippingSerializer,
 )
+from products.serializers import (
+    ProductSerializer,
+)
 
 
 class PromoCodeSerializer(serializers.ModelSerializer):
@@ -30,6 +33,7 @@ class OrderProductSerializer(serializers.ModelSerializer):
     """
     Serializes OrderProduct model instances.
     """
+    product = ProductSerializer(read_only=True)
     class Meta:
         model = OrderProduct
         fields = "__all__"
