@@ -244,6 +244,10 @@ class RatingAndReviewAPIViewSet(ModelViewSet):
     serializer_class = RatingAndReviewSerializer
     queryset = RatingAndReview.objects.all()
     permission_classes = (IsOwnerOrReadOnly,)
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filterset_fields = ('user', 'product',)
+    search_fields = ('review', 'user',)
+    ordering_fields = ['created_on',]
     
     def create(self, request, *args, **kwargs):
         ordered_product_id = request.data.get('ordered_product_id')
@@ -255,8 +259,6 @@ class RatingAndReviewAPIViewSet(ModelViewSet):
                 },
                 status.HTTP_405_METHOD_NOT_ALLOWED
             )
-
-
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.validated_data['ordered_product_obj'] = ordered_product_obj
@@ -268,7 +270,12 @@ class RatingAndReviewAPIViewSet(ModelViewSet):
                 status.HTTP_418_IM_A_TEAPOT
             )       
         self.perform_create(serializer)
-        return Response(serializer.data, status=status.HTTP_201_CREATED,)
+        return Response(
+            {
+                'message':'successfully reviewed.'
+            }
+            ,status=status.HTTP_201_CREATED
+        )
 
     def perform_create(self, serializer):
         ordered_product_obj = serializer.validated_data.get('ordered_product_obj')
@@ -280,7 +287,15 @@ class RatingAndReviewAPIViewSet(ModelViewSet):
             image = serializer.validated_data.get('image')
         )         
         ordered_product_obj.reviews = review_obj
+        ordered_product_obj.to_be_reviewed=False
         ordered_product_obj.save()
+    
+    def perform_destroy(self, instance):
+        instance.on_ordered_product.to_be_reviewed=True
+        instance.on_ordered_product.save()
+        instance.delete()
+    
+
 
 
 

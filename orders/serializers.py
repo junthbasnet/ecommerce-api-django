@@ -16,6 +16,7 @@ from users.serializers import (
 )
 from products.serializers import (
     ProductSerializer,
+    RatingAndReviewSerializer,
 )
 
 
@@ -34,6 +35,7 @@ class OrderProductSerializer(serializers.ModelSerializer):
     Serializes OrderProduct model instances.
     """
     product = ProductSerializer(read_only=True)
+    reviews = RatingAndReviewSerializer(read_only=True)
     class Meta:
         model = OrderProduct
         fields = "__all__"
@@ -46,7 +48,7 @@ class OrderSerializer(serializers.ModelSerializer):
     payment_uuid = serializers.CharField(max_length=63, write_only=True, required=True)
     cart_items = serializers.ListField(allow_empty=False, write_only=True)
     products = OrderProductSerializer(many=True, read_only=True)
-    user = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField(read_only=True)
     shipping_data = serializers.SerializerMethodField(read_only=True)
 
     class Meta:

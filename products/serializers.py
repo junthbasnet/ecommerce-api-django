@@ -58,6 +58,27 @@ class BrandSerializer(serializers.ModelSerializer):
         )
 
 
+class RatingAndReviewSerializer(serializers.ModelSerializer):
+    """
+    Serializes rating and review model instances.
+    """
+    # from orders.serializers import (
+    #     OrderProductSerializer,
+    # )
+    ordered_product_id = serializers.IntegerField(min_value=1, write_only=True)
+    # on_ordered_product = OrderProductSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
+    class Meta:
+        model = RatingAndReview
+        fields = (
+            'id', 'user', 'product', 'rating', 'review', 'image',
+            'ordered_product_id',
+        )
+        read_only_fields = (
+            'user', 'product',
+        )
+
+
 class ProductSerializer(serializers.ModelSerializer):
     """
     Serializes Product model instances.
@@ -137,24 +158,6 @@ class ProductAnswerSerializer(serializers.ModelSerializer):
             'user', 'created_on', 'modified_on',
         )
 
-
-class RatingAndReviewSerializer(serializers.ModelSerializer):
-    """
-    Serializes rating and review model instances.
-    """
-    from orders.serializers import (
-        OrderProductSerializer,
-    )
-    ordered_product_id = serializers.IntegerField(min_value=1, write_only=True)
-    on_ordered_product = OrderProductSerializer(read_only=True)
-    class Meta:
-        model = RatingAndReview
-        fields = (
-            'id', 'user', 'product', 'rating', 'review', 'image', 'ordered_product_id', 'on_ordered_product',
-        )
-        read_only_fields = (
-            'user', 'product',
-        )
 
 
 
