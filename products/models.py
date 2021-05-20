@@ -1,6 +1,6 @@
 import os
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
@@ -218,11 +218,32 @@ class Answer(TimeStampedModel):
         return f'{self.answer[:20]}... asked by {self.user}'
 
 
-# class RatingAndReviews(TimeStampedModel):
-#     """
-#     Model to store ratings and reviews given in products.
-#     """
-#     pass
+class RatingAndReview(TimeStampedModel):
+    """
+    Model to store ratings and reviews on ordered products.
+    """
+    user = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+    product = models.ForeignKey(
+        'products.Product',
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+    rating = models.PositiveIntegerField(
+        _('rating'),
+        default=5,
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    review = models.TextField(_('review'))
+    image = models.ImageField(_('image'), upload_to='product_reviews')
+
+    class Meta:
+        verbose_name = _('Ratings & Reviews')
+        verbose_name_plural = _('Ratings & Reviews')
+        ordering = ('-created_on',)
 
 
 

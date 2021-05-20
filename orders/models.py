@@ -1,9 +1,9 @@
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from common.models import TimeStampedModel
+from common.models import TimeStampedModel, BaseModel
 
 
 class PromoCode(TimeStampedModel):
@@ -24,3 +24,148 @@ class PromoCode(TimeStampedModel):
     @property
     def is_valid(self):
         return self.start_date <= timezone.now().date() <= self.end_date
+
+
+class OrderProduct(BaseModel):
+    """
+    Model to store ordered product (individual).
+    """
+    DELIVERY_STATUS = [
+        ('Pending', 'Pending'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled')
+    ]
+    user = models.ForeignKey(
+        'users.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='ordered_products',
+    )
+    product = models.ForeignKey(
+        'products.Product',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='ordered'
+    )
+    color = models.CharField(_('color'), max_length=64, default='')
+    quantity = models.PositiveIntegerField(_('quantity'), default=1, validators=[MinValueValidator(1)])
+    rate = models.DecimalField(
+        _('rate'),
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            'price per product.'
+        )
+    )
+    net_total = models.DecimalField(
+        _('net total'),
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            'price per product * quantity.'
+        )
+    )
+
+    delivery_status = models.CharField(
+        _('delivery status'),
+        max_length=9,
+        choices=DELIVERY_STATUS,
+        default='Pending'
+    )
+    estimated_delivery_date = models.DateField(_('estimated delivery date'), default=None, null=True)
+    delivered_at = models.DateField(_('delivered at'), default=None, null=True)
+
+    to_be_reviewed = models.BooleanField(_('to be reviewed'), default=True)
+    reviews = models.OneToOneField(
+        'products.RatingAndReview',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='on_ordered_product'
+    )
+
+    class Meta:
+        verbose_name='Order Product'
+        verbose_name_plural='Order Products'
+        ordering = ('-created_on',)
+
+
+class Order(BaseModel):
+    """
+    Model to store order information.
+    """
+    DELIVERY_STATUS = [
+        ('Pending', 'Pending'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled')
+    ]
+    user = models.ForeignKey(
+        'users.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='orders',
+    )
+    payment = models.OneToOneField('payments.Payment', on_delete=models.PROTECT)
+    delivery_status = models.CharField(
+        _('delivery status'),
+        max_length=9,
+        choices=DELIVERY_STATUS,
+        default='Pending'
+    )
+    estimated_delivery_date = models.DateField(_('estimated delivery date'), default=None, null=True)
+    order_uuid = models.CharField(_('order uuid'), max_length=255, unique=True)
+    discount = models.DecimalField(
+        _('discount'),
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            'discount using promo code.'
+        )
+    )
+    delivery_charge = models.DecimalField(
+        _('discount'),
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            'discount using promo code.'
+        )
+    )
+    final_price = models.DecimalField(
+        _('final price'),
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            'final price of all products in cart.'
+        )
+    )
+
+    class Meta:
+        verbose_name = _('Order')
+        verbose_name_plural = _('Orders')
+        ordering = ('-created_on',)
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
