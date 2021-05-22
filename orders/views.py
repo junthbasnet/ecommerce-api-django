@@ -208,14 +208,18 @@ class MarkOrderAsCompletedAPIView(APIView):
         order_obj.delivered_at = timezone.now().date()
         order_obj.save()
 
-        order_obj.products.update(delivery_status='Completed', delivered_at = timezone.now().date())
+        order_obj.products.update(
+            delivery_status='Completed',
+            delivered_at = timezone.now().date()
+        )
 
         for ordered_product in order_obj.products.all():
-            Product.objects.filter(pk=ordered_product.product.pk).update(
+            Product.objects.filter(
+                pk=ordered_product.product.pk
+            ).update(
                 quantity=F('quantity') - ordered_product.quantity, 
                 items_sold=F('items_sold') + ordered_product.quantity
             )
-            print(ordered_product.product)
 
         return Response(
             {
