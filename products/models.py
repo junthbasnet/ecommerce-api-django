@@ -3,6 +3,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+from django.db.models import Avg, Max, Min
 
 from common.models import SEOBaseModel, TimeStampedModel
 
@@ -136,6 +137,14 @@ class Product(SEOBaseModel):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+    
+    @property
+    def average_rating(self):
+        return self.reviews.aggregate(average_rating=Avg('rating')).get('average_rating', 0)
+
+    @property
+    def count_of_users_who_rated(self):
+        return self.reviews.count()
 
 
 class GlobalSpecification(TimeStampedModel):

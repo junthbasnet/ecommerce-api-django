@@ -85,6 +85,9 @@ class ProductSerializer(serializers.ModelSerializer):
     """
     category_name = serializers.CharField(source='sub_category.category.name', read_only=True)
     sub_category_name = serializers.CharField(source='sub_category.name', read_only=True)
+    avg_rating = serializers.CharField(source='average_rating', read_only=True)
+    count_of_user_who_rated = serializers.IntegerField(source='count_of_users_who_rated', read_only=True)
+    rating_per_stars = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Product
@@ -92,6 +95,24 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'slug',
         )
+
+    def get_rating_per_stars(self, obj):
+        """
+        Returns dict of ratings and their respective percentage value.
+        """
+        rating_count = 1 if obj.reviews.count() == 0 else obj.reviews.count()
+        one_star = obj.reviews.filter(rating=1).count() / rating_count * 100 
+        two_stars = obj.reviews.filter(rating=2).count() / rating_count * 100 
+        three_stars = obj.reviews.filter(rating=3).count() / rating_count * 100 
+        four_stars = obj.reviews.filter(rating=4).count() / rating_count * 100 
+        five_stars = obj.reviews.filter(rating=5).count() / rating_count * 100 
+        return {
+            '1':one_star,
+            '2':two_stars,
+            '3':three_stars,
+            '4':four_stars,
+            '5':five_stars,
+        }
 
 
 class ProductImageSerializer(serializers.ModelSerializer):

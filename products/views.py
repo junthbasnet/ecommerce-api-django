@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import ProtectedError
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
+from django.db.models import Avg, Max, Min
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -104,7 +105,7 @@ class ProductAPIViewSet(ModelViewSet):
     """
     serializer_class = ProductSerializer
     queryset = Product.objects.all().order_by('-id')
-    filter_backends = (DjangoFilterBackend, SearchFilter)
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     search_fields = (
         'name', 'overview', 'slug', 'sub_category__name',
         'sub_category__description',
@@ -112,6 +113,9 @@ class ProductAPIViewSet(ModelViewSet):
     filterset_fields = (
         'sub_category', 'sub_category__slug', 'sub_category__category',
         'sub_category__category__slug', 'brand', 
+    )
+    ordering_fields = (
+        'items_sold', 'selling_price', 'created_on',
     )
 
 
