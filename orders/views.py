@@ -2,6 +2,8 @@
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
+from django.db.models import Avg, Max, Min, F
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -21,6 +23,9 @@ from .models import (
     Order,
     OrderProduct,
 )
+from products.models import (
+    Product
+)
 from .serializers import (
     PromoCodeSerializer,
     OrderSerializer,
@@ -28,6 +33,7 @@ from .serializers import (
 )
 from .utils import (
     get_product_obj,
+    get_order_obj,
 )
 
 ORDER_PREFIX = 'NEBUYO-ORDER-'
@@ -179,6 +185,55 @@ class OrderProductListAPIView(ListAPIView):
         if self.request.user.is_staff:
             return OrderProduct.objects.all()
         return self.request.user.ordered_products.all()
+
+
+class MarkOrderAsCompletedAPIView(APIView):
+    """
+    APIView that marks order as completed and their corresponding ordered products
+    and sets delivery date.
+    """
+    permission_classes = (IsAdminUser,)
+
+    def post(self, request, *args, **kwargs):
+        order_id = request.data.get('order_id', None)
+        order_obj = get_order_obj(order_id)
+        if order_obj.delivery_status=='Completed':
+            return Response(
+                {
+                    'error_message': 'Order is already completed.'
+                },
+                status.HTTP_423_LOCKED
+            )
+        order_obj.delivery_status = 'Completed'
+        order_obj.delivered_at = timezone.now().date()
+        order_obj.save()
+
+        order_obj.products.update(delivery_status='Completed', delivered_at = timezone.now().date())
+
+        for ordered_product in order_obj.products.all():
+            Product.objects.filter(pk=ordered_product.product.pk).update(
+                quantity=F('quantity') - ordered_product.quantity, 
+                items_sold=F('items_sold') + ordered_product.quantity
+            )
+            print(ordered_product.product)
+
+        return Response(
+            {
+                'message': 'Marked order as completed.'
+            },
+            status.HTTP_200_OK
+        )
+
+
+        
+
+
+
+
+
+
+
+
 
 
 

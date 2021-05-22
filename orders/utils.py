@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from rest_framework import serializers
 from payments.models import Payment
 from products.models import Product
+from .models import Order, OrderProduct
 
 
 def validate_payment(payment_uuid, user):
@@ -124,6 +125,24 @@ def is_quantity_less_than_or_equal_to(cart_items):
         product_obj = get_product_obj(product_id)
         check_product_quantity(product_obj, product_quantity)
     return True
+
+
+def get_order_obj(order_id):
+    """
+    Raises validation error or returns order_obj.
+    """
+    try:
+        order_obj = Order.objects.get(pk=order_id)
+    except ObjectDoesNotExist or MultipleObjectsReturned:
+        raise serializers.ValidationError(
+            {
+                'error_message': [
+                    f"Order with order_id:{order_id} doesn't exist."
+                ]
+            },
+            code='invalid_order_id'
+        )
+    return order_obj
 
 
 

@@ -90,12 +90,12 @@ class OrderSerializer(serializers.ModelSerializer):
                 code='no_shipping'
             )
 
+        validate_final_price_client_server(client_final_price, delivery_charge, discount, cart_items)
+        is_quantity_less_than_or_equal_to(cart_items)
         payment_obj = validate_payment(payment_uuid, user)
         payment_obj.order_assigned=True
         payment_obj.save()
 
-        is_quantity_less_than_or_equal_to(cart_items)
-        validate_final_price_client_server(client_final_price, delivery_charge, discount, cart_items)
         validate_final_price_with_payment_obj(payment_obj, delivery_charge, discount, cart_items)
 
         data['final_price'] = payment_obj.amount
