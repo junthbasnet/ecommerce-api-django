@@ -90,6 +90,7 @@ class ProductSerializer(serializers.ModelSerializer):
     count_of_user_who_rated = serializers.IntegerField(source='count_of_users_who_rated', read_only=True)
     rating_per_stars = serializers.SerializerMethodField(read_only=True)
     is_deal_of_the_day_product = serializers.BooleanField(source='is_deal_of_the_day', read_only=True)
+    is_todays_popular_pick_product = serializers.BooleanField(source='is_todays_popular_pick', read_only=True)
 
     class Meta:
         model = Product

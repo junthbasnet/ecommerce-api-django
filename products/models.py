@@ -170,6 +170,13 @@ class Product(SEOBaseModel):
         except:
             return False
 
+    @property
+    def is_todays_popular_pick(self):
+        try:
+            return True if self.todays_popular_pick and self.todays_popular_pick.is_active else False
+        except:
+            return False
+
 
 class DealOfTheDay(TimeStampedModel):
     """
@@ -196,6 +203,28 @@ class DealOfTheDay(TimeStampedModel):
     @property
     def is_valid(self):
         return self.start_date <= timezone.now().date() <= self.end_date
+
+
+class PopularPick(TimeStampedModel):
+    """
+    Model to store today's popular pick products.
+    """
+    product = models.OneToOneField(
+        'Product',
+        on_delete=models.CASCADE,
+        related_name='todays_popular_pick',
+    )
+    is_active = models.BooleanField(_('is active'), default=True)
+    priority  = models.PositiveIntegerField(
+        default=0,
+        blank=True,
+        help_text=_('Higher the priority, first it comes in listing'),
+    )
+    
+    class Meta:
+        verbose_name = _('Today\'s Popular Pick')
+        verbose_name_plural = _('Today\'s Popular Pick')
+        ordering = ('-priority',)
 
 
 class GlobalSpecification(TimeStampedModel):
