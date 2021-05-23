@@ -6,6 +6,7 @@ from .views import (
     OrderListAPIView,
     OrderProductListAPIView,
     MarkOrderAsCompletedAPIView,
+    MarkOrderAsCancelledAPIView,
 )
 
 urlpatterns = [
@@ -15,4 +16,5 @@ urlpatterns = [
     path('list/', OrderListAPIView.as_view(), name='user_orders'),
     path('products-list/', OrderProductListAPIView.as_view(), name='user_ordered_products'),
     path('mark-complete/', MarkOrderAsCompletedAPIView.as_view(), name='mark_order_as_completed'),
+    path('mark-cancel/', MarkOrderAsCancelledAPIView.as_view(), name='mark_order_as_cancelled'),
 ]

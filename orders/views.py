@@ -229,6 +229,46 @@ class MarkOrderAsCompletedAPIView(APIView):
         )
 
 
+class MarkOrderAsCancelledAPIView(APIView):
+    """
+    APIView that marks order as cancelled and their corresponding ordered products.
+    """
+    permission_classes = (IsAdminUser,)
+
+    def post(self, request, *args, **kwargs):
+        order_id = request.data.get('order_id', None)
+        order_obj = get_order_obj(order_id)
+        if order_obj.delivery_status=='Completed':
+            return Response(
+                {
+                    'error_message': 'Order is already completed.'
+                },
+                status.HTTP_423_LOCKED
+            )
+        if order_obj.delivery_status=='Cancelled':
+            return Response(
+                {
+                    'error_message': 'Order is already cancelled.'
+                },
+                status.HTTP_423_LOCKED
+            )
+        order_obj.delivery_status = 'Cancelled'
+        order_obj.delivered_at = None
+        order_obj.save()
+
+        order_obj.products.update(
+            delivery_status='Cancelled',
+            delivered_at=None
+        )
+
+        return Response(
+            {
+                'message': 'Marked order as cancelled.'
+            },
+            status.HTTP_200_OK
+        )
+
+
         
 
 
