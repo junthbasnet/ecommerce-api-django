@@ -13,6 +13,7 @@ from .models import (
     Answer,
     RatingAndReview,
     DealOfTheDay,
+    PopularPick,
 )
 
 
@@ -290,6 +291,34 @@ class DealOfTheDayAdmin(admin.ModelAdmin):
             'General', {
             'fields': (
                 'product', 'start_date', 'end_date', 'priority',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
+    def image_thumbnail(self, obj):
+        try:
+            img_url=obj.product.hero_image.url
+        except :
+            img_url="https://imgur.com/2pO6gCt.png"
+        return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
+
+
+@admin.register(PopularPick)
+class PopularPickAdmin(admin.ModelAdmin):
+    list_display = ('id', 'product', 'is_active', 'priority', 'image_thumbnail')
+    list_filter = ('priority', 'is_active', )
+    search_fields = ('product__name',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'product', 'is_active', 'priority',
             )
         }),
         (
