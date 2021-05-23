@@ -126,6 +126,26 @@ class Product(SEOBaseModel):
     images = models.JSONField(_('images'), default=list)
     color_images = models.JSONField(_('color images'), default=list)
 
+    average_rating = models.DecimalField(
+        _('average rating'),
+        max_digits=3,
+        decimal_places=2,
+        default=5,
+        help_text=_(
+            'average rating calculated from ratings and reviews table.'
+        )
+    )
+    views_count = models.PositiveIntegerField(
+        _('views count'),
+        default=0,
+        help_text=_(
+            'number of times the product is viewed.'
+        )
+    )
+
+    is_featured = models.BooleanField(_('is featured'), default=False)
+
+
     class Meta:
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
@@ -138,9 +158,9 @@ class Product(SEOBaseModel):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
     
-    @property
-    def average_rating(self):
-        return self.reviews.aggregate(average_rating=Avg('rating')).get('average_rating', 0)
+    # @property
+    # def average_rating(self):
+    #     return self.reviews.aggregate(average_rating=Avg('rating')).get('average_rating', 0)
 
     @property
     def count_of_users_who_rated(self):
