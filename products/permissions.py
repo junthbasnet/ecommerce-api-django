@@ -14,3 +14,13 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # ordered_product_obj = get_ordered_product_obj(ordered_product_id)
         # return ordered_product_obj.user == request.user == obj.user and ordered_product_obj.reviews == obj
         return request.user == obj.user
+
+
+class IsAdminUserOrReadOnly(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        return bool(
+            request.method in permissions.SAFE_METHODS or
+            request.user and
+            request.user.is_staff
+        )
