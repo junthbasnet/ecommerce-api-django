@@ -8,6 +8,7 @@ from django.contrib.postgres.search import (
 from .models import Product
 from orders.models import OrderProduct
 
+
 def get_similar_products(query):
     """
     Returns similar products.
@@ -42,3 +43,21 @@ def get_ordered_product_obj(ordered_product_id):
             code='invalid_ordered_product_id'
         )
     return ordered_product_obj
+
+
+def get_product_obj(product_id):
+    """
+    Raises validation error or returns product_obj.
+    """
+    try:
+        product_obj = Product.objects.get(pk=product_id)
+    except ObjectDoesNotExist or MultipleObjectsReturned:
+        raise serializers.ValidationError(
+            {
+                'error_message': [
+                    f"Product with product_id:{product_id} doesn't exist."
+                ]
+            },
+            code='invalid_product_id'
+        )
+    return product_obj

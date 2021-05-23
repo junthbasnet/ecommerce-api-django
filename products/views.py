@@ -8,6 +8,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import ListAPIView
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAdminUser,
+)
 from .models import (
     Brand,
     Category,
@@ -36,6 +40,7 @@ from .serializers import (
 from .utils import (
     get_similar_products,
     get_ordered_product_obj,
+    get_product_obj,
 )
 
 
@@ -324,6 +329,28 @@ class RatingAndReviewAPIViewSet(ModelViewSet):
         instance.delete()
         product_obj = instance.product
         self.set_average_rating(product_obj)
+
+
+class MarkProductAsFeaturedAPIView(APIView):
+    """
+    APIView that marks product as featured.
+    """
+    permission_classes = (IsAdminUser,)
+
+    def post(self, request, *args, **kwargs):
+        product_id = request.data.get('product_id', None)
+        product_obj = get_product_obj(product_id)
+
+        Product.objects.update(is_featured=False)
+        product_obj.is_featured=True
+        product_obj.save()
+        
+        return Response(
+            {
+                'message': f'sets {product_obj.name} as featured product.'
+            },
+            status.HTTP_200_OK
+        )
     
 
 
