@@ -12,6 +12,7 @@ from .models import (
     Question,
     Answer,
     RatingAndReview,
+    DealOfTheDay,
 )
 
 
@@ -274,6 +275,34 @@ class RatingAndReviewAdmin(admin.ModelAdmin):
     def image_thumbnail(self, obj):
         try:
             img_url=obj.image.url
+        except :
+            img_url="https://imgur.com/2pO6gCt.png"
+        return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
+
+
+@admin.register(DealOfTheDay)
+class DealOfTheDayAdmin(admin.ModelAdmin):
+    list_display = ('id', 'product', 'start_date', 'end_date', 'priority', 'image_thumbnail')
+    list_filter = ('priority',)
+    search_fields = ('product__name',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'product', 'start_date', 'end_date', 'priority',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
+    def image_thumbnail(self, obj):
+        try:
+            img_url=obj.product.hero_image.url
         except :
             img_url="https://imgur.com/2pO6gCt.png"
         return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')

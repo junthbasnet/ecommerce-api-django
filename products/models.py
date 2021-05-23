@@ -163,6 +163,13 @@ class Product(SEOBaseModel):
     def count_of_users_who_rated(self):
         return self.reviews.count()
 
+    @property
+    def is_deal_of_the_day(self):
+        try:
+            return True if self.deal_of_the_day and self.deal_of_the_day.is_valid else False
+        except:
+            return False
+
 
 class DealOfTheDay(TimeStampedModel):
     """
@@ -185,6 +192,10 @@ class DealOfTheDay(TimeStampedModel):
         verbose_name = _('Deal Of The Day')
         verbose_name_plural = _('Deal Of The Day')
         ordering = ('-priority',)
+    
+    @property
+    def is_valid(self):
+        return self.start_date <= timezone.now().date() <= self.end_date
 
 
 class GlobalSpecification(TimeStampedModel):
