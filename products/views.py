@@ -25,6 +25,7 @@ from .models import (
     Answer,
     RatingAndReview,
     DealOfTheDay,
+    PopularPick,
 )
 from .permissions import(
     IsOwnerOrReadOnly,
@@ -40,6 +41,7 @@ from .serializers import (
     ProductAnswerSerializer,
     RatingAndReviewSerializer,
     DealOfTheDaySerializer,
+    PopularPickSerializer,
 )
 from .utils import (
     get_similar_products,
@@ -360,15 +362,56 @@ class MarkProductAsFeaturedAPIView(APIView):
 class DealOfTheDayProductAPIViewSet(ModelViewSet):
     """
     APIViewSet that manages deal of the day products.
+    query-params = deal-of-the-day
+    possible_values : ['all', 'inactive']
     """
     serializer_class = DealOfTheDaySerializer
     queryset = DealOfTheDay.objects.none()
+    filter_backends = (OrderingFilter,)
+    ordering_fields = ['created_on', 'priority']
 
     def get_queryset(self):
-        return DealOfTheDay.objects.filter(
+        queryset= DealOfTheDay.objects.filter(
             start_date__lte=timezone.now().date(),
             end_date__gte=timezone.now().date()
         )
+        query_params = self.request.GET.get('deal-of-the-day')
+        if query_params == 'all':
+            queryset = DealOfTheDay.objects.all()        
+        if query_params == 'inactive':
+            queryset= DealOfTheDay.objects.exclude(
+                start_date__lte=timezone.now().date(),
+                end_date__gte=timezone.now().date()
+            )      
+        return queryset
+    
+        def get_serializer_context(self):
+            """
+            Extra context provided to the serializer class.
+            """
+            return {
+                'request': self.request,
+            }
+
+
+class TodaysPopularPickProductAPIViewSet(ModelViewSet):
+    """
+    APIViewSet that manages today's popular pick products.
+    """
+    serializer_class = PopularPickSerializer
+    queryset = PopularPick.objects.all()
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filterset_fields = ('is_active',)
+    ordering_fields = ['created_on', 'priority']
+
+    def get_serializer_context(self):
+        """
+        Extra context provided to the serializer class.
+        """
+        return {
+            'request': self.request,
+        }
+
     
 
 

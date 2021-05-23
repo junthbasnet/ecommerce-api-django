@@ -11,6 +11,7 @@ from .models import (
     Answer,
     RatingAndReview,
     DealOfTheDay,
+    PopularPick,
 )
 from users.serializers import UserSerializer
 
@@ -193,7 +194,19 @@ class DealOfTheDaySerializer(serializers.ModelSerializer):
         fields = '__all__'
     
     def get_product_data(self, obj):
-        return ProductSerializer(obj.product).data
+        return ProductSerializer(obj.product, context={'request':self.context['request']}).data
+
+class PopularPickSerializer(serializers.ModelSerializer):
+    """
+    Serializes PopularPick model instances.
+    """
+    product_data = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = PopularPick
+        fields = '__all__'
+    
+    def get_product_data(self, obj):
+        return ProductSerializer(obj.product, context={'request':self.context['request']}).data
 
 
 
