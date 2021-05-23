@@ -116,7 +116,18 @@ class ProductAPIViewSet(ModelViewSet):
     )
     ordering_fields = (
         'items_sold', 'selling_price', 'created_on',
+        'views_count', 'average_rating',
     )
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Retrieve a model instance and increase views_count by 1.
+        """
+        instance = self.get_object()
+        instance.views_count += 1
+        instance.save()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 
 class GlobalSpecificationAPIViewSet(ModelViewSet):
@@ -259,7 +270,7 @@ class RatingAndReviewAPIViewSet(ModelViewSet):
         if ordered_product_obj.user != request.user:
             return Response(
                 {
-                    'error_message': 'You cannot give review.'
+                    'error_message': 'You cannot give review unless you order a product.'
                 },
                 status.HTTP_405_METHOD_NOT_ALLOWED
             )
@@ -293,11 +304,26 @@ class RatingAndReviewAPIViewSet(ModelViewSet):
         ordered_product_obj.reviews = review_obj
         ordered_product_obj.to_be_reviewed=False
         ordered_product_obj.save()
+
+        self.set_average_rating(ordered_product_obj.product)
+    
+    def set_average_rating(self, product_obj):
+        average_rating = product_obj.reviews.aggregate(average_rating=Avg('rating')).get('average_rating', 5)
+        product_obj.average_rating = average_rating
+        product_obj.save()
+        print(average_rating)
+
+    def perform_update(self, serializer):
+        serializer.save()
+        product_obj = self.get_object().product
+        self.set_average_rating(product_obj)
     
     def perform_destroy(self, instance):
         instance.on_ordered_product.to_be_reviewed=True
         instance.on_ordered_product.save()
         instance.delete()
+        product_obj = instance.product
+        self.set_average_rating(product_obj)
     
 
 
