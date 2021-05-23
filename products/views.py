@@ -29,6 +29,7 @@ from .models import (
 )
 from .permissions import(
     IsOwnerOrReadOnly,
+    IsAdminUserOrReadOnly,
 )
 from .serializers import (
     CategorySerializer,
@@ -56,6 +57,7 @@ class CategoryAPIViewSet(ModelViewSet):
     """
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
+    permission_classes = (IsAdminUserOrReadOnly,)
 
 
     def destroy(self, request, *args, **kwargs):
@@ -84,6 +86,7 @@ class SubCategoryAPIViewSet(ModelViewSet):
     """
     serializer_class = SubCategorySerializer
     queryset = SubCategory.objects.all()
+    permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (DjangoFilterBackend, SearchFilter)
     search_fields = (
         'name', 'description', 'slug', 'category__name', 'category__description',
@@ -116,6 +119,7 @@ class ProductAPIViewSet(ModelViewSet):
     """
     serializer_class = ProductSerializer
     queryset = Product.objects.all().order_by('-id')
+    permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     search_fields = (
         'name', 'overview', 'slug', 'sub_category__name',
@@ -147,6 +151,7 @@ class GlobalSpecificationAPIViewSet(ModelViewSet):
     """
     serializer_class = GlobalSpecificationSerializer
     queryset = GlobalSpecification.objects.all()
+    permission_classes = (IsAdminUser,)
 
 
 class BrandAPIViewSet(ModelViewSet):
@@ -155,6 +160,7 @@ class BrandAPIViewSet(ModelViewSet):
     """
     serializer_class = BrandSerializer
     queryset = Brand.objects.all()
+    permission_classes = (IsAdminUserOrReadOnly,)
 
 
 class ProductImageAPIViewSet(ModelViewSet):
@@ -163,6 +169,7 @@ class ProductImageAPIViewSet(ModelViewSet):
     """
     serializer_class = ProductImageSerializer
     queryset = ProductImage.objects.all()
+    permission_classes=(IsAdminUser,)
 
 
 class ProductQuestionAPIViewSet(ModelViewSet):
@@ -171,6 +178,7 @@ class ProductQuestionAPIViewSet(ModelViewSet):
     """
     serializer_class = ProductQuestionSerializer
     queryset = Question.objects.all()
+    permission_classes = (IsAuthenticated,)
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('product', 'is_answered',)
 
@@ -185,6 +193,7 @@ class ProductAnswerAPIViewSet(ModelViewSet):
     """
     serializer_class = ProductAnswerSerializer
     queryset = Answer.objects.all()
+    permission_classes = (IsAdminUser,)
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('question', )
 
@@ -367,6 +376,7 @@ class DealOfTheDayProductAPIViewSet(ModelViewSet):
     """
     serializer_class = DealOfTheDaySerializer
     queryset = DealOfTheDay.objects.none()
+    permission_classes=(IsAdminUserOrReadOnly,)
     filter_backends = (OrderingFilter,)
     ordering_fields = ['created_on', 'priority']
 
@@ -400,6 +410,7 @@ class TodaysPopularPickProductAPIViewSet(ModelViewSet):
     """
     serializer_class = PopularPickSerializer
     queryset = PopularPick.objects.all()
+    permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_fields = ('is_active',)
     ordering_fields = ['created_on', 'priority']
