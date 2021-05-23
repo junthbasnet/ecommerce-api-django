@@ -4,6 +4,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Avg, Max, Min
+from django.utils import timezone
 
 from common.models import SEOBaseModel, TimeStampedModel
 
@@ -157,14 +158,33 @@ class Product(SEOBaseModel):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
-    
-    # @property
-    # def average_rating(self):
-    #     return self.reviews.aggregate(average_rating=Avg('rating')).get('average_rating', 0)
 
     @property
     def count_of_users_who_rated(self):
         return self.reviews.count()
+
+
+class DealOfTheDay(TimeStampedModel):
+    """
+    Model to store deal of the day products.
+    """
+    product = models.OneToOneField(
+        'Product',
+        on_delete=models.CASCADE,
+        related_name='deal_of_the_day',
+    )
+    start_date = models.DateField(_('start date'))
+    end_date = models.DateField(_('end date'))
+    priority  = models.PositiveIntegerField(
+        default=0,
+        blank=True,
+        help_text=_('Higher the priority, first it comes in listing'),
+    )
+    
+    class Meta:
+        verbose_name = _('Deal Of The Day')
+        verbose_name_plural = _('Deal Of The Day')
+        ordering = ('-priority',)
 
 
 class GlobalSpecification(TimeStampedModel):
