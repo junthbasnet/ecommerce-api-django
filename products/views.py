@@ -4,6 +4,7 @@ from django.db.models import ProtectedError
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.db.models import Avg, Max, Min
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -23,6 +24,7 @@ from .models import (
     Question,
     Answer,
     RatingAndReview,
+    DealOfTheDay,
 )
 from .permissions import(
     IsOwnerOrReadOnly,
@@ -37,6 +39,7 @@ from .serializers import (
     ProductQuestionSerializer,
     ProductAnswerSerializer,
     RatingAndReviewSerializer,
+    DealOfTheDaySerializer,
 )
 from .utils import (
     get_similar_products,
@@ -352,6 +355,24 @@ class MarkProductAsFeaturedAPIView(APIView):
             },
             status.HTTP_200_OK
         )
+
+
+class DealOfTheDayProductAPIViewSet(ModelViewSet):
+    """
+    APIViewSet that manages deal of the day products.
+    """
+    serializer_class = DealOfTheDaySerializer
+    queryset = DealOfTheDay.objects.none()
+
+    def get_queryset(self):
+        return DealOfTheDay.objects.filter(
+            start_date__lte=timezone.now().date(),
+            end_date__gte=timezone.now().date()
+        )
+    
+
+
+
     
 
 

@@ -10,6 +10,7 @@ from .views import (
     ProductQuestionAPIViewSet,
     ProductAnswerAPIViewSet,
     RatingAndReviewAPIViewSet,
+    DealOfTheDayProductAPIViewSet,
 )
 
 router = DefaultRouter()
@@ -22,5 +23,6 @@ router.register('images', ProductImageAPIViewSet)
 router.register('questions', ProductQuestionAPIViewSet)
 router.register('answers', ProductAnswerAPIViewSet)
 router.register('reviews', RatingAndReviewAPIViewSet)
+router.register('deal-of-the-day', DealOfTheDayProductAPIViewSet)
 router.register('', ProductAPIViewSet)
 

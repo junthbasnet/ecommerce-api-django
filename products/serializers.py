@@ -10,6 +10,7 @@ from .models import (
     Question,
     Answer,
     RatingAndReview,
+    DealOfTheDay,
 )
 from users.serializers import UserSerializer
 
@@ -179,6 +180,19 @@ class ProductAnswerSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'user', 'created_on', 'modified_on',
         )
+
+
+class DealOfTheDaySerializer(serializers.ModelSerializer):
+    """
+    Serializes DealOfTheDay model instances.
+    """
+    product_data = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = DealOfTheDay
+        fields = '__all__'
+    
+    def get_product_data(self, obj):
+        return ProductSerializer(obj.product).data
 
 
 
