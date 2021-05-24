@@ -335,6 +335,63 @@ class RatingAndReview(TimeStampedModel):
         ordering = ('-created_on',)
 
 
+class ProductForPreOrder(TimeStampedModel):
+    """
+    Model to store pre-order products for bundling them.
+    """
+    name = models.CharField(_('name'), max_length=255)
+    image = models.ImageField(_('image'), upload_to='products_for_pre_order')
+
+    class Meta:
+        verbose_name = _('Product For Pre-Order')
+        verbose_name_plural = _('Products For Pre-Order')
+        ordering = ('-created_on',)
+    
+    def __str__(self):
+        return f'{self.name}'
+
+
+class ProductBundleForPreOrder(SEOBaseModel):
+    """
+    Model that stores pre order product bundles.
+    """
+    name = models.CharField(_('name'), max_length=255)
+    image = models.ImageField(_('image'), upload_to='product_bundles_for_pre_order')
+    products = models.ManyToManyField('ProductForPreOrder', related_name='product_bundles')
+    description = models.CharField(
+        _('description'),
+        max_length=512,
+        default='',
+        help_text=_('short description of what this bundle contains.')
+    )
+    overview = models.TextField(_('overview'), default='')
+    marked_price = models.DecimalField(
+        _('marked price'),
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(1)]
+    )
+    selling_price = models.DecimalField(
+        _('selling price'),
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(1)]
+    )
+
+    class Meta:
+        verbose_name = _('Product Bundle For Pre-Order')
+        verbose_name_plural = _('Product Bundles For Pre-Order')
+        ordering = ('-created_on',)
+    
+    def __str__(self):
+        return f'{self.name}'
+    
+
+    
+
+
+
 
 
 
