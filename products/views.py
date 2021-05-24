@@ -26,6 +26,8 @@ from .models import (
     RatingAndReview,
     DealOfTheDay,
     PopularPick,
+    ProductForPreOrder,
+    ProductBundleForPreOrder,
 )
 from .permissions import(
     IsOwnerOrReadOnly,
@@ -43,6 +45,8 @@ from .serializers import (
     RatingAndReviewSerializer,
     DealOfTheDaySerializer,
     PopularPickSerializer,
+    ProductForPreOrderSerializer,
+    ProductBundleForPreOrderSerializer,
 )
 from .utils import (
     get_similar_products,
@@ -422,6 +426,16 @@ class TodaysPopularPickProductAPIViewSet(ModelViewSet):
         return {
             'request': self.request,
         }
+
+
+class ProductForPreOrderAPIViewSet(ModelViewSet):
+    """
+    APIViewSet that manages products for pre-order.
+    """
+    serializer_class = ProductForPreOrderSerializer
+    queryset = ProductForPreOrder.objects.all()
+    permission_classes = (IsAdminUser,)
+
 
     
 
