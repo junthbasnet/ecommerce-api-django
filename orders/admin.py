@@ -5,6 +5,7 @@ from .models import (
     PromoCode,
     Order,
     OrderProduct,
+    PreOrderProductBundle,
 )
 from products.models import RatingAndReview
 
@@ -96,3 +97,28 @@ class OrderProductAdmin(admin.ModelAdmin):
         except :
             img_url="https://imgur.com/2pO6gCt.png"
         return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
+
+
+
+@admin.register(PreOrderProductBundle)
+class PreOrderProductBundleAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'user', 'payment', 'product_bundle', 'quantity', 'delivery_status', 'delivered_at', 'shipping', 'pre_order_uuid', 'final_price'
+    )
+    list_filter = ('delivery_status', 'payment__method')
+    search_fields = ('user__email', 'pre_order_uuid', 'payment__payment_uuid',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'user', 'payment','product_bundle', 'quantity', 'delivery_status', 'estimated_delivery_date','delivered_at', 'shipping',
+                'pre_order_uuid', 'discount', 'delivery_charge', 'final_price'
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on', 'deleted_on', 'is_deleted'
+            ),
+        }),
+    )
