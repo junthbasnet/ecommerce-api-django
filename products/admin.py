@@ -14,6 +14,8 @@ from .models import (
     RatingAndReview,
     DealOfTheDay,
     PopularPick,
+    ProductForPreOrder,
+    ProductBundleForPreOrder,
 )
 
 
@@ -332,6 +334,75 @@ class PopularPickAdmin(admin.ModelAdmin):
     def image_thumbnail(self, obj):
         try:
             img_url=obj.product.hero_image.url
+        except :
+            img_url="https://imgur.com/2pO6gCt.png"
+        return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
+
+
+@admin.register(ProductForPreOrder)
+class ProductForPreOrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'image_thumbnail',)
+    search_fields = ('name',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'name', 'image',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
+    def image_thumbnail(self, obj):
+        try:
+            img_url=obj.image.url
+        except :
+            img_url="https://imgur.com/2pO6gCt.png"
+        return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
+
+
+@admin.register(ProductBundleForPreOrder)
+class ProductBundleForPreOrderAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'name', 'selling_price', 'description',
+        'image_thumbnail',
+    )
+    list_filter = ('products',)
+    search_fields = ('name', 'description', 'overview',)
+    prepopulated_fields = {'slug': ('name',)}
+    filter_horizontal = ('products',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'name', 'slug', 'image', 'description', 'products',
+                'overview', 'marked_price', 'selling_price',
+            )
+        }),
+
+        (
+            'SEO', {
+            'fields': (
+                'og_url', 'og_title', 'og_description', 'og_image',
+                'meta_title', 'meta_description', 'keywords', 'tags',
+            ),
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
+    def image_thumbnail(self, obj):
+        try:
+            img_url=obj.image.url
         except :
             img_url="https://imgur.com/2pO6gCt.png"
         return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')

@@ -356,6 +356,7 @@ class ProductBundleForPreOrder(SEOBaseModel):
     Model that stores pre order product bundles.
     """
     name = models.CharField(_('name'), max_length=255)
+    slug = models.SlugField(_('slug'), max_length=255)
     image = models.ImageField(_('image'), upload_to='product_bundles_for_pre_order')
     products = models.ManyToManyField('ProductForPreOrder', related_name='product_bundles')
     description = models.CharField(
@@ -386,6 +387,11 @@ class ProductBundleForPreOrder(SEOBaseModel):
     
     def __str__(self):
         return f'{self.name}'
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
     
 
     
