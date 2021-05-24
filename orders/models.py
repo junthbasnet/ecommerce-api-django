@@ -166,6 +166,81 @@ class Order(BaseModel):
         return f'{self.order_uuid}'
 
 
+class PreOrderProductBundle(BaseModel):
+    """
+    Model to store pre-order information.
+    """
+    DELIVERY_STATUS = [
+        ('Pending', 'Pending'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled')
+    ]
+    user = models.ForeignKey(
+        'users.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='pre_orders',
+    )
+    product_bundle = models.ForeignKey(
+        'products.ProductBundleForPreOrder',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='pre_orders'
+    )
+    quantity = models.PositiveIntegerField(_('quantity'), default=1, validators=[MinValueValidator(1)])
+    payment = models.OneToOneField('payments.Payment', on_delete=models.PROTECT, related_name='pre_order')
+    delivery_status = models.CharField(
+        _('delivery status'),
+        max_length=9,
+        choices=DELIVERY_STATUS,
+        default='Pending'
+    )
+    estimated_delivery_date = models.DateField(_('estimated delivery date'), default=None, null=True)
+    delivered_at = models.DateField(_('delivered at'), default=None, null=True)
+    shipping = models.ForeignKey(
+        'users.Shipping',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='pre_orders'
+    )
+    pre_order_uuid = models.CharField(_('pre order uuid'), max_length=255, unique=True)
+    discount = models.DecimalField(
+        _('discount'),
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(0)],
+        help_text=_(
+            'discount using promo code.'
+        )
+    )
+    delivery_charge = models.DecimalField(
+        _('delivery charge'),
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(0)],
+        help_text=_(
+            'shipping delivery charge.'
+        )
+    )
+    final_price = models.DecimalField(
+        _('final price'),
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            'final price of all products in bundle.'
+        )
+    )
+
+    class Meta:
+        verbose_name = _('Pre-Order Product Bundle')
+        verbose_name_plural = _('Pre-Order Product Bundles')
+        ordering = ('-created_on',)
+    
+    def __str__(self):
+        return f'{self.pre_order_uuid}'
 
 
 
