@@ -228,6 +228,9 @@ class ProductBundleForPreOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model=ProductBundleForPreOrder
         fields = '__all__'
+        read_only_fields = (
+            'slug',
+        )
 
 
 

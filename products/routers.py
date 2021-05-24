@@ -13,6 +13,7 @@ from .views import (
     DealOfTheDayProductAPIViewSet,
     TodaysPopularPickProductAPIViewSet,
     ProductForPreOrderAPIViewSet,
+    ProductBundleForPreOrderAPIViewSet,
 )
 
 router = DefaultRouter()
@@ -28,5 +29,6 @@ router.register('reviews', RatingAndReviewAPIViewSet)
 router.register('deal-of-the-day', DealOfTheDayProductAPIViewSet)
 router.register('todays-popular-pick', TodaysPopularPickProductAPIViewSet)
 router.register('for-pre-order', ProductForPreOrderAPIViewSet)
+router.register('bundles-for-pre-order', ProductBundleForPreOrderAPIViewSet)
 router.register('', ProductAPIViewSet)
 

@@ -437,6 +437,17 @@ class ProductForPreOrderAPIViewSet(ModelViewSet):
     permission_classes = (IsAdminUser,)
 
 
+class ProductBundleForPreOrderAPIViewSet(ModelViewSet):
+    """
+    APIViewSet that manages product bundles for pre-order.
+    """
+    serializer_class = ProductBundleForPreOrderSerializer
+    queryset = ProductBundleForPreOrder.objects.all()
+    permission_classes = (IsAdminUserOrReadOnly,)
+
+    
+
+
     
 
 
