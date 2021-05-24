@@ -2,13 +2,16 @@ from rest_framework import serializers
 from .models import (
     PromoCode,
     Order,
-    OrderProduct
+    OrderProduct,
+    PreOrderProductBundle,
 )
 from .utils import (
     validate_payment,
     validate_final_price_client_server,
     validate_final_price_with_payment_obj,
     is_quantity_less_than_or_equal_to,
+    validate_final_price_client_server_for_pre_order,
+    validate_final_price_of_pre_order_with_payment_obj,
 )
 from users.serializers import (
     UserSerializer,
@@ -71,7 +74,7 @@ class OrderSerializer(serializers.ModelSerializer):
     
     def validate(self, data):
         """
-        Check payment.
+        Check payment, quantity, price.
         """
         user = self.context['request'].user
         payment_uuid = data.get('payment_uuid', None)
@@ -103,5 +106,67 @@ class OrderSerializer(serializers.ModelSerializer):
         return data
     
 
+class PreOrderProductBundleSerializer(serializers.ModelSerializer):
+    """
+    Serializes PreOrderProductBundle model instances.
+    """
+    payment_uuid = serializers.CharField(max_length=63, write_only=True, required=True)
+    class Meta:
+        model=PreOrderProductBundle
+        fields = (
+            'id', 'pre_order_uuid', 'product_bundle', 'quantity', 'user', 'payment',
+            'delivery_status', 'estimated_delivery_date', 'delivered_at', 'shipping',
+            'discount', 'delivery_charge', 'final_price', 'payment_uuid',
+            'created_on', 'modified_on',
+        )
+        read_only_fields = (
+            'pre_order_uuid', 'user', 'payment', 'delivery_status',
+            'estimated_delivery_date', 'delivered_at',
+        )
+
+
+    def validate(self, data):
+        """
+        Check payment, price.
+        """
+        user = self.context['request'].user
+        product_bundle_obj = data.get('product_bundle', None)
+        payment_uuid = data.get('payment_uuid', None)
+        client_final_price = data.get('final_price', None)
+        delivery_charge = data.get('delivery_charge', 0)
+        quantity = data.get('quantity', 1)
+        discount = data.get('discount', 0)
+        shipping = data.get('shipping', None)
+
+        # Required : shipping and product_bundle (ID)
+        if not shipping:
+            raise serializers.ValidationError(
+                {
+                    'error_message': [
+                        f"shipping id is needed."
+                    ]
+                },
+                code='no_shipping'
+            )
+        if not product_bundle_obj:
+            raise serializers.ValidationError(
+                {
+                    'error_message': [
+                        f"product_bundle id is needed."
+                    ]
+                },
+                code='no_product_bundle'
+            )
+
+        validate_final_price_client_server_for_pre_order(client_final_price, delivery_charge, discount, product_bundle_obj, quantity)
+        payment_obj = validate_payment(payment_uuid, user)
+        payment_obj.order_assigned=True
+        payment_obj.save()
+
+        validate_final_price_of_pre_order_with_payment_obj(payment_obj, delivery_charge, discount, product_bundle_obj, quantity)
+
+        data['final_price'] = payment_obj.amount
+        data['payment_obj'] = payment_obj
+        return data
 
 

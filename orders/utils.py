@@ -145,5 +145,40 @@ def get_order_obj(order_id):
     return order_obj
 
 
+def validate_final_price_client_server_for_pre_order(client_final_price, delivery_charge, discount, product_bundle_obj, quantity):
+    """
+    Returns true or raises validation error.
+    """
+    calculated_final_price = (product_bundle_obj.selling_price * quantity) - discount + delivery_charge
+    if calculated_final_price != client_final_price:
+        raise serializers.ValidationError(
+            {
+                'error_message': [
+                    f"Client final price: {client_final_price}. Server final price: {calculated_final_price}"
+                ]
+            },
+            code='invalid_final_price'
+        )
+    return True
+
+
+def validate_final_price_of_pre_order_with_payment_obj(payment_obj, delivery_charge, discount, product_bundle_obj, quantity):
+    """
+    Returns True or raises validation error.
+    """
+    calculated_final_price = (product_bundle_obj.selling_price * quantity) - discount + delivery_charge
+    if payment_obj.amount < calculated_final_price:
+        raise serializers.ValidationError(
+            {
+                'error_message': [
+                    f"You ordered products worth {calculated_final_price}  but paid {payment_obj.amount}"
+                ]
+            },
+            code='insufficient_payment'
+        )
+    return True
+
+
+
 
 

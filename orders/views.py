@@ -22,6 +22,7 @@ from .models import (
     PromoCode,
     Order,
     OrderProduct,
+    PreOrderProductBundle,
 )
 from products.models import (
     Product
@@ -30,6 +31,7 @@ from .serializers import (
     PromoCodeSerializer,
     OrderSerializer,
     OrderProductSerializer,
+    PreOrderProductBundleSerializer,
 )
 from .utils import (
     get_product_obj,
@@ -37,6 +39,7 @@ from .utils import (
 )
 
 ORDER_PREFIX = 'NEBUYO-ORDER-'
+PRE_ORDER_PREFIX = 'NEBUYO-PRE-ORDER-'
 
 
 class PromoCodeAPIViewSet(ModelViewSet):
@@ -267,6 +270,54 @@ class MarkOrderAsCancelledAPIView(APIView):
             },
             status.HTTP_200_OK
         )
+
+
+class PreOrderCheckOutCreateAPIView(CreateAPIView):
+    """
+    APIView that manages pre-order product bundle checkout and creates
+    PreOrderProductBundle model instance.
+    """
+    serializer_class = PreOrderProductBundleSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(
+            {
+                "message":"successfully pre-ordered."
+            },
+            status=status.HTTP_201_CREATED
+        )
+
+    def perform_create(self, serializer):
+
+        payment_obj = serializer.validated_data.get('payment_obj')
+        final_price = serializer.validated_data.get('final_price')
+        shipping = serializer.validated_data.get('shipping')
+        product_bundle_obj = serializer.validated_data.get('product_bundle')
+
+        pre_order_product_bundle_obj = PreOrderProductBundle.objects.create(
+            user = self.request.user,
+            product_bundle=product_bundle_obj,
+            rate = product_bundle_obj.selling_price,
+            payment = payment_obj,
+            shipping = shipping,
+            discount = serializer.validated_data.get('discount', 0),
+            delivery_charge = serializer.validated_data.get('delivery_charge', 0),
+            quantity = serializer.validated_data.get('quantity', 1),
+            final_price = final_price
+        )
+        pre_order_product_bundle_obj.pre_order_uuid = PRE_ORDER_PREFIX + str(pre_order_product_bundle_obj.pk)
+        pre_order_product_bundle_obj.save()
+
+    def get_serializer_context(self):
+        """
+        Extra context provided to the serializer class.
+        """
+        return {
+            'request': self.request,
+        }
 
 
         

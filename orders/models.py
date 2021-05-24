@@ -188,6 +188,15 @@ class PreOrderProductBundle(BaseModel):
         related_name='pre_orders'
     )
     quantity = models.PositiveIntegerField(_('quantity'), default=1, validators=[MinValueValidator(1)])
+    rate = models.DecimalField(
+        _('rate'),
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            'price per product-bundle.'
+        )
+    )
     payment = models.OneToOneField('payments.Payment', on_delete=models.PROTECT, related_name='pre_order')
     delivery_status = models.CharField(
         _('delivery status'),
