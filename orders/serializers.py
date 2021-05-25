@@ -20,6 +20,7 @@ from users.serializers import (
 from products.serializers import (
     ProductSerializer,
     RatingAndReviewSerializer,
+    ProductBundleForPreOrderSerializer,
 )
 
 
@@ -111,19 +112,25 @@ class PreOrderProductBundleSerializer(serializers.ModelSerializer):
     Serializes PreOrderProductBundle model instances.
     """
     payment_uuid = serializers.CharField(max_length=63, write_only=True, required=True)
+    product_bundle_data = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model=PreOrderProductBundle
         fields = (
             'id', 'pre_order_uuid', 'product_bundle', 'quantity', 'user', 'payment',
             'delivery_status', 'estimated_delivery_date', 'delivered_at', 'shipping',
             'discount', 'delivery_charge', 'final_price', 'payment_uuid',
-            'created_on', 'modified_on',
+            'created_on', 'modified_on', 'product_bundle_data'
         )
         read_only_fields = (
             'pre_order_uuid', 'user', 'payment', 'delivery_status',
             'estimated_delivery_date', 'delivered_at',
         )
-
+    
+    def get_product_bundle_data(self, obj):
+        return ProductBundleForPreOrderSerializer(
+            obj.product_bundle, 
+            context={'request':self.context['request']}
+        ).data
 
     def validate(self, data):
         """

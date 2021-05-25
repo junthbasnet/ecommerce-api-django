@@ -36,6 +36,7 @@ from .serializers import (
 from .utils import (
     get_product_obj,
     get_order_obj,
+    get_pre_order_obj,
 )
 
 ORDER_PREFIX = 'NEBUYO-ORDER-'
@@ -318,6 +319,88 @@ class PreOrderCheckOutCreateAPIView(CreateAPIView):
         return {
             'request': self.request,
         }
+
+
+class PreOrderListAPIView(ListAPIView):
+    """
+    APIView that lists user pre-orders.
+    """
+    serializer_class = PreOrderProductBundleSerializer
+    queryset = PreOrderProductBundle.objects.none()
+    permission_classes = (IsAuthenticated,)
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    search_fields = ('pre_order_uuid', )
+    ordering_fields = ('created_on', 'delivered_at')
+    filterset_fields = ('delivery_status', 'user', 'product_bundle',)
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return PreOrderProductBundle.objects.all()
+        return self.request.user.pre_orders.all()
+
+
+class MarkPreOrderAsCompletedAPIView(APIView):
+    """
+    APIView that marks pre-ordered product bundle as completed
+    and sets delivery date.
+    """
+    permission_classes = (IsAdminUser,)
+
+    def post(self, request, *args, **kwargs):
+        pre_order_id = request.data.get('pre_order_id', None)
+        pre_order_obj = get_pre_order_obj(pre_order_id)
+        if pre_order_obj.delivery_status=='Completed':
+            return Response(
+                {
+                    'error_message': 'Pre-Order is already completed.'
+                },
+                status.HTTP_423_LOCKED
+            )
+        pre_order_obj.delivery_status = 'Completed'
+        pre_order_obj.delivered_at = timezone.now().date()
+        pre_order_obj.save()
+
+        return Response(
+            {
+                'message': 'Marked pre-order as completed.'
+            },
+            status.HTTP_200_OK
+        )
+
+
+class MarkPreOrderAsCancelledAPIView(APIView):
+    """
+    APIView that marks pre-order as cancelled.
+    """
+    permission_classes = (IsAdminUser,)
+
+    def post(self, request, *args, **kwargs):
+        pre_order_id = request.data.get('pre_order_id', None)
+        pre_order_obj = get_pre_order_obj(pre_order_id)
+        if pre_order_obj.delivery_status=='Completed':
+            return Response(
+                {
+                    'error_message': 'Pre-Order is already completed.'
+                },
+                status.HTTP_423_LOCKED
+            )
+        if pre_order_obj.delivery_status=='Cancelled':
+            return Response(
+                {
+                    'error_message': 'pre-order is already cancelled.'
+                },
+                status.HTTP_423_LOCKED
+            )
+        pre_order_obj.delivery_status = 'Cancelled'
+        pre_order_obj.delivered_at = None
+        pre_order_obj.save()
+
+        return Response(
+            {
+                'message': 'Marked pre-order as cancelled.'
+            },
+            status.HTTP_200_OK
+        )
 
 
         

@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from rest_framework import serializers
 from payments.models import Payment
 from products.models import Product
-from .models import Order, OrderProduct
+from .models import Order, OrderProduct, PreOrderProductBundle
 
 
 def validate_payment(payment_uuid, user):
@@ -178,6 +178,23 @@ def validate_final_price_of_pre_order_with_payment_obj(payment_obj, delivery_cha
         )
     return True
 
+
+def get_pre_order_obj(pre_order_id):
+    """
+    Raises validation error or returns pre_order_obj.
+    """
+    try:
+        pre_order_obj = PreOrderProductBundle.objects.get(pk=pre_order_id)
+    except ObjectDoesNotExist or MultipleObjectsReturned:
+        raise serializers.ValidationError(
+            {
+                'error_message': [
+                    f"PreOrderProductBundle with pre_order_id:{pre_order_id} doesn't exist."
+                ]
+            },
+            code='invalid_pre_order_id'
+        )
+    return pre_order_obj
 
 
 

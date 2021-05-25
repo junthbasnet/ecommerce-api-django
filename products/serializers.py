@@ -225,12 +225,21 @@ class ProductBundleForPreOrderSerializer(serializers.ModelSerializer):
     """
     Serializes ProductBundleForPreOrder model instances.
     """
+    products_data = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model=ProductBundleForPreOrder
         fields = '__all__'
         read_only_fields = (
             'slug',
         )
+
+    def get_products_data(self, obj):
+        return ProductForPreOrderSerializer(
+            obj.products.all(),
+            many=True,
+            context={'request':self.context['request']}
+        ).data
+
 
 
 
