@@ -29,6 +29,7 @@ from .models import (
     ProductForPreOrder,
     ProductBundleForPreOrder,
 )
+from .filters import ProductFilterSet
 from .permissions import(
     IsOwnerOrReadOnly,
     IsAdminUserOrReadOnly,
@@ -129,10 +130,7 @@ class ProductAPIViewSet(ModelViewSet):
         'name', 'overview', 'slug', 'sub_category__name',
         'sub_category__description',
     )
-    filterset_fields = (
-        'sub_category', 'sub_category__slug', 'sub_category__category',
-        'sub_category__category__slug', 'brand', 
-    )
+    filterset_class = ProductFilterSet
     ordering_fields = (
         'items_sold', 'selling_price', 'created_on',
         'views_count', 'average_rating',
