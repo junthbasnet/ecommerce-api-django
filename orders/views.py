@@ -1,4 +1,5 @@
 
+from datetime import timedelta
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -39,6 +40,7 @@ from .utils import (
     get_pre_order_obj,
     generate_order_uuid,
     generate_pre_order_uuid,
+    get_estimated_delivery_date,
 )
 
 
@@ -108,6 +110,7 @@ class CheckOutCreateAPIView(CreateAPIView):
         payment_obj = serializer.validated_data.get('payment_obj')
         final_price = serializer.validated_data.get('final_price')
         shipping = serializer.validated_data.get('shipping')
+        estimated_delivery_date = get_estimated_delivery_date(shipping.area.delivery_duration)
 
         order_obj = Order.objects.create(
             user = self.request.user,
@@ -115,7 +118,8 @@ class CheckOutCreateAPIView(CreateAPIView):
             shipping = shipping,
             discount = serializer.validated_data.get('discount', 0),
             delivery_charge = serializer.validated_data.get('delivery_charge', 0),
-            final_price = final_price
+            final_price = final_price,
+            estimated_delivery_date = estimated_delivery_date
         )
         order_obj.order_uuid = generate_order_uuid(order_obj.pk)
         order_obj.save()
@@ -142,7 +146,8 @@ class CheckOutCreateAPIView(CreateAPIView):
                 color = color,
                 quantity = product_quantity,
                 rate = rate,
-                net_total = net_total,    
+                net_total = net_total,
+                estimated_delivery_date = order_obj.estimated_delivery_date  
             )
     
     def get_serializer_context(self):
@@ -204,6 +209,13 @@ class MarkOrderAsCompletedAPIView(APIView):
             return Response(
                 {
                     'error_message': 'Order is already completed.'
+                },
+                status.HTTP_423_LOCKED
+            )
+        if order_obj.delivery_status=='Cancelled':
+            return Response(
+                {
+                    'error_message': 'Order is already cancelled.'
                 },
                 status.HTTP_423_LOCKED
             )
@@ -295,6 +307,7 @@ class PreOrderCheckOutCreateAPIView(CreateAPIView):
         payment_obj = serializer.validated_data.get('payment_obj')
         final_price = serializer.validated_data.get('final_price')
         shipping = serializer.validated_data.get('shipping')
+        estimated_delivery_date = get_estimated_delivery_date(shipping.area.delivery_duration)
         product_bundle_obj = serializer.validated_data.get('product_bundle')
 
         pre_order_product_bundle_obj = PreOrderProductBundle.objects.create(
@@ -306,7 +319,8 @@ class PreOrderCheckOutCreateAPIView(CreateAPIView):
             discount = serializer.validated_data.get('discount', 0),
             delivery_charge = serializer.validated_data.get('delivery_charge', 0),
             quantity = serializer.validated_data.get('quantity', 1),
-            final_price = final_price
+            final_price = final_price,
+            estimated_delivery_date = estimated_delivery_date
         )
         pre_order_product_bundle_obj.pre_order_uuid = generate_pre_order_uuid(pre_order_product_bundle_obj.pk)
         pre_order_product_bundle_obj.save()
@@ -352,6 +366,13 @@ class MarkPreOrderAsCompletedAPIView(APIView):
             return Response(
                 {
                     'error_message': 'Pre-Order is already completed.'
+                },
+                status.HTTP_423_LOCKED
+            )
+        if pre_order_obj.delivery_status=='Cancelled':
+            return Response(
+                {
+                    'error_message': 'Pre-Order is already cancelled.'
                 },
                 status.HTTP_423_LOCKED
             )

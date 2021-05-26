@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils import timezone
 from rest_framework import serializers
@@ -212,6 +213,13 @@ def generate_pre_order_uuid(pre_order_id):
     """
     PRE_ORDER_PREFIX = timezone.now().date().strftime('%Y%m%d') + 'PO'
     return PRE_ORDER_PREFIX + str(pre_order_id)
+
+
+def get_estimated_delivery_date(delivery_duration):
+    """
+    Returns estimated delivery date
+    """
+    return timezone.now().date() + timedelta(days=int(delivery_duration))
 
 
 
