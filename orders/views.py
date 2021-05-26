@@ -47,6 +47,8 @@ from .notify import (
     notify_admin_about_order_creation,
     notify_user_about_pre_order_creation,
     notify_admin_about_pre_order_creation,
+    send_order_create_mail_to_user,
+    send_pre_order_create_mail_to_user
 )
 
 
@@ -155,6 +157,7 @@ class CheckOutCreateAPIView(CreateAPIView):
                 net_total = net_total,
                 estimated_delivery_date = order_obj.estimated_delivery_date  
             )
+        send_order_create_mail_to_user(order_obj)
         notify_user_about_order_creation(order_obj)
         notify_admin_about_order_creation(order_obj)
         
@@ -333,6 +336,7 @@ class PreOrderCheckOutCreateAPIView(CreateAPIView):
         pre_order_product_bundle_obj.pre_order_uuid = generate_pre_order_uuid(pre_order_product_bundle_obj.pk)
         pre_order_product_bundle_obj.save()
 
+        send_pre_order_create_mail_to_user(pre_order_product_bundle_obj)
         notify_user_about_pre_order_creation(pre_order_product_bundle_obj)
         notify_admin_about_pre_order_creation(pre_order_product_bundle_obj)
 
