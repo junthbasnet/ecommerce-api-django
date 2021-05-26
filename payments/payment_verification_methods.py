@@ -11,13 +11,15 @@ from payments.models import (
     EsewaPayment,
 )
 from payments import status
+from .helpers import get_payment_environment_variable_value_for
 
 def verify_fonepay(user, data, amount):
     amt = amount
     prn = data['prn']
     bid = data['bid']
     uid = data['uid']
-    pid = settings.FONEPAY_MERCHANT_CODE
+    # pid = settings.FONEPAY_MERCHANT_CODE
+    pid = get_payment_environment_variable_value_for('FONEPAY_MERCHANT_CODE')
     if FonepayPayment.objects.filter(prn=prn).exists():
         return status.PAYMENT_426_DUPLICATE_PAYMENT
     dv = generate_fonepay_hash(pid, amt, prn, bid, uid)
@@ -57,8 +59,13 @@ def verify_khalti(user, token, amount):
         "token": token,
         "amount": amount,
     }
+    # headers = {
+    #     "Authorization": "Key {}".format(settings.KHALTI_SECRET_KEY)
+    # }
     headers = {
-        "Authorization": "Key {}".format(settings.KHALTI_SECRET_KEY)
+        "Authorization": "Key {}".format(
+            get_payment_environment_variable_value_for('KHALTI_SECRET_KEY')
+        )
     }
     if KhaltiPayment.objects.filter(token=token).exists():
         return status.PAYMENT_426_DUPLICATE_PAYMENT
@@ -76,9 +83,15 @@ def verify_khalti(user, token, amount):
 
 
 def verify_esewa(user, data, amount):
+    # payload = {
+    #     'amt': amount,
+    #     'scd': settings.ESEWA_SCD,
+    #     'rid': data['rid'],
+    #     'pid': data['pid']
+    # }
     payload = {
         'amt': amount,
-        'scd': settings.ESEWA_SCD,
+        'scd': get_payment_environment_variable_value_for('ESEWA_SCD'),
         'rid': data['rid'],
         'pid': data['pid']
     }
@@ -106,11 +119,16 @@ def verify_esewa(user, data, amount):
 
 
 def verify_imepay(user, data, amount):
+    # MERCHANT_CODE = settings.IME_MERCHANT_CODE
+    # headers = {
+    #     "Authorization": f"Basic {settings.IMEPAY_TOKEN}",
+    #     "Module": settings.IME_MODULE
+    # }
     url = settings.IME_URL
-    MERCHANT_CODE = settings.IME_MERCHANT_CODE
+    MERCHANT_CODE = get_payment_environment_variable_value_for('IME_MERCHANT_CODE')  
     headers = {
-        "Authorization": f"Basic {settings.IMEPAY_TOKEN}",
-        "Module": settings.IME_MODULE
+        "Authorization": f"Basic {get_payment_environment_variable_value_for('IMEPAY_TOKEN')}",
+        "Module": get_payment_environment_variable_value_for('IME_MODULE') 
     }
     payload = {
         "MerchantCode": MERCHANT_CODE,
