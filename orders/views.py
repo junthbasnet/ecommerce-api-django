@@ -37,10 +37,9 @@ from .utils import (
     get_product_obj,
     get_order_obj,
     get_pre_order_obj,
+    generate_order_uuid,
+    generate_pre_order_uuid,
 )
-
-ORDER_PREFIX = 'NEBUYO-ORDER-'
-PRE_ORDER_PREFIX = 'NEBUYO-PRE-ORDER-'
 
 
 class PromoCodeAPIViewSet(ModelViewSet):
@@ -118,7 +117,7 @@ class CheckOutCreateAPIView(CreateAPIView):
             delivery_charge = serializer.validated_data.get('delivery_charge', 0),
             final_price = final_price
         )
-        order_obj.order_uuid = ORDER_PREFIX + str(order_obj.pk)
+        order_obj.order_uuid = generate_order_uuid(order_obj.pk)
         order_obj.save()
         self.perform_create_order_product(serializer, order_obj)
 
@@ -309,7 +308,7 @@ class PreOrderCheckOutCreateAPIView(CreateAPIView):
             quantity = serializer.validated_data.get('quantity', 1),
             final_price = final_price
         )
-        pre_order_product_bundle_obj.pre_order_uuid = PRE_ORDER_PREFIX + str(pre_order_product_bundle_obj.pk)
+        pre_order_product_bundle_obj.pre_order_uuid = generate_pre_order_uuid(pre_order_product_bundle_obj.pk)
         pre_order_product_bundle_obj.save()
 
     def get_serializer_context(self):

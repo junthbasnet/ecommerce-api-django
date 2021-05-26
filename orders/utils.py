@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.utils import timezone
 from rest_framework import serializers
 from payments.models import Payment
 from products.models import Product
@@ -195,6 +196,23 @@ def get_pre_order_obj(pre_order_id):
             code='invalid_pre_order_id'
         )
     return pre_order_obj
+
+
+def generate_order_uuid(order_id):
+    """
+    Returns order_uuid.
+    """
+    ORDER_PREFIX = timezone.now().date().strftime('%Y%m%d') + 'O'
+    return ORDER_PREFIX + str(order_id)
+
+
+def generate_pre_order_uuid(pre_order_id):
+    """
+    Returns pre_order_uuid.
+    """
+    PRE_ORDER_PREFIX = timezone.now().date().strftime('%Y%m%d') + 'PO'
+    return PRE_ORDER_PREFIX + str(pre_order_id)
+
 
 
 
