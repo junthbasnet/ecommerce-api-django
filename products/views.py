@@ -442,6 +442,9 @@ class ProductBundleForPreOrderAPIViewSet(ModelViewSet):
     serializer_class = ProductBundleForPreOrderSerializer
     queryset = ProductBundleForPreOrder.objects.all()
     permission_classes = (IsAdminUserOrReadOnly,)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filterset_fields = ('is_active',)
+    ordering_fields = ['created_on',]
 
     
 

@@ -370,9 +370,9 @@ class ProductForPreOrderAdmin(admin.ModelAdmin):
 class ProductBundleForPreOrderAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'name', 'selling_price', 'description',
-        'image_thumbnail',
+        'is_active', 'image_thumbnail',
     )
-    list_filter = ('products',)
+    list_filter = ('products', 'is_active',)
     search_fields = ('name', 'description', 'overview',)
     prepopulated_fields = {'slug': ('name',)}
     filter_horizontal = ('products',)
@@ -381,7 +381,7 @@ class ProductBundleForPreOrderAdmin(admin.ModelAdmin):
             'General', {
             'fields': (
                 'name', 'slug', 'image', 'description', 'products',
-                'overview', 'marked_price', 'selling_price',
+                'overview', 'marked_price', 'selling_price', 'is_active',
             )
         }),
 

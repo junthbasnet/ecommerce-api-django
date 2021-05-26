@@ -379,6 +379,7 @@ class ProductBundleForPreOrder(SEOBaseModel):
         decimal_places=2,
         validators=[MinValueValidator(1)]
     )
+    is_active = models.BooleanField(_('is_active'), default=True)
 
     class Meta:
         verbose_name = _('Product Bundle For Pre-Order')
