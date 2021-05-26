@@ -45,6 +45,8 @@ from .utils import (
 from .notify import (
     notify_user_about_order_creation,
     notify_admin_about_order_creation,
+    notify_user_about_pre_order_creation,
+    notify_admin_about_pre_order_creation,
 )
 
 
@@ -156,7 +158,6 @@ class CheckOutCreateAPIView(CreateAPIView):
         notify_user_about_order_creation(order_obj)
         notify_admin_about_order_creation(order_obj)
         
-    
     def get_serializer_context(self):
         """
         Extra context provided to the serializer class.
@@ -331,6 +332,9 @@ class PreOrderCheckOutCreateAPIView(CreateAPIView):
         )
         pre_order_product_bundle_obj.pre_order_uuid = generate_pre_order_uuid(pre_order_product_bundle_obj.pk)
         pre_order_product_bundle_obj.save()
+
+        notify_user_about_pre_order_creation(pre_order_product_bundle_obj)
+        notify_admin_about_pre_order_creation(pre_order_product_bundle_obj)
 
     def get_serializer_context(self):
         """

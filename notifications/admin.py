@@ -3,10 +3,9 @@ from django.contrib import admin
 from .models import Notification
 
 
-
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'title',)
+    list_display = ('id', 'user', 'title', 'created_on',)
     list_filter = ('user__is_staff',)
     search_fields = ('title', 'body', 'user__email',)
     fieldsets = (
