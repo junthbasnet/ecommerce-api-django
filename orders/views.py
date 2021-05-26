@@ -42,6 +42,10 @@ from .utils import (
     generate_pre_order_uuid,
     get_estimated_delivery_date,
 )
+from .notify import (
+    notify_user_about_order_creation,
+    notify_admin_about_order_creation,
+)
 
 
 class PromoCodeAPIViewSet(ModelViewSet):
@@ -149,6 +153,9 @@ class CheckOutCreateAPIView(CreateAPIView):
                 net_total = net_total,
                 estimated_delivery_date = order_obj.estimated_delivery_date  
             )
+        notify_user_about_order_creation(order_obj)
+        notify_admin_about_order_creation(order_obj)
+        
     
     def get_serializer_context(self):
         """
