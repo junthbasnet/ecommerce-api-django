@@ -333,9 +333,9 @@ class RatingAndReviewAPIViewSet(ModelViewSet):
     
     def set_average_rating(self, product_obj):
         average_rating = product_obj.reviews.aggregate(average_rating=Avg('rating')).get('average_rating', 5)
+        average_rating = average_rating if average_rating else 5
         product_obj.average_rating = average_rating
         product_obj.save()
-        print(average_rating)
 
     def perform_update(self, serializer):
         serializer.save()

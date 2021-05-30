@@ -132,6 +132,7 @@ class Product(SEOBaseModel):
         max_digits=3,
         decimal_places=2,
         default=5,
+        null=True,
         help_text=_(
             'average rating calculated from ratings and reviews table.'
         )
@@ -418,7 +419,8 @@ class ProductBanner(TimeStampedModel):
     
     def __str__(self):
         return f'{self.product.name}'
-        
+
+
     
 
 
