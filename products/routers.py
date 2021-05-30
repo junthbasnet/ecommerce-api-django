@@ -10,6 +10,7 @@ from .views import (
     ProductQuestionAPIViewSet,
     ProductAnswerAPIViewSet,
     RatingAndReviewAPIViewSet,
+    FeaturedProductAPIViewSet,
     DealOfTheDayProductAPIViewSet,
     TodaysPopularPickProductAPIViewSet,
     ProductForPreOrderAPIViewSet,
@@ -27,6 +28,7 @@ router.register('images', ProductImageAPIViewSet)
 router.register('questions', ProductQuestionAPIViewSet)
 router.register('answers', ProductAnswerAPIViewSet)
 router.register('reviews', RatingAndReviewAPIViewSet)
+router.register('featured', FeaturedProductAPIViewSet)
 router.register('deal-of-the-day', DealOfTheDayProductAPIViewSet)
 router.register('todays-popular-pick', TodaysPopularPickProductAPIViewSet)
 router.register('for-pre-order', ProductForPreOrderAPIViewSet)

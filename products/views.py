@@ -29,6 +29,7 @@ from .models import (
     ProductForPreOrder,
     ProductBundleForPreOrder,
     ProductBanner,
+    FeaturedProduct,
 )
 from .filters import ProductFilterSet
 from .permissions import(
@@ -50,6 +51,7 @@ from .serializers import (
     ProductForPreOrderSerializer,
     ProductBundleForPreOrderSerializer,
     ProductBannerSerializer,
+    FeaturedProductSerializer,
 )
 from .utils import (
     get_similar_products,
@@ -235,7 +237,7 @@ class CompareSimilarProductsListAPIView(ListAPIView):
             )
         
         query = product_obj.name
-        queryset = get_similar_products(query)[:4]        
+        queryset = get_similar_products(query)      
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -269,9 +271,7 @@ class SimilarProductsListAPIView(ListAPIView):
         
         query = product_obj.name
         similar_products = get_similar_products(query)
-        queryset = similar_products[4:9]
-        if len(queryset) <= 5:
-            queryset = list(similar_products)[-1::-1]        
+        queryset = similar_products        
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -370,6 +370,35 @@ class MarkProductAsFeaturedAPIView(APIView):
             },
             status.HTTP_200_OK
         )
+
+
+class FeaturedProductAPIViewSet(ModelViewSet):
+    """
+    APIViewSet that manages featured product.
+    """
+    serializer_class = FeaturedProductSerializer
+    queryset = FeaturedProduct.objects.all().order_by('-id')
+    permission_classes = (IsAdminUserOrReadOnly,)
+
+    def perform_create(self, serializer):
+        """
+        Creates featured product and resets all other set featured products.
+        """
+        self.set_featured_product(serializer)
+    
+    def perform_update(self, serializer):
+        """
+        Updates featured product and resets all other set featured products.
+        """
+        self.set_featured_product(serializer)
+
+    def set_featured_product(self, serializer):
+        FeaturedProduct.objects.all().delete()
+        Product.objects.update(is_featured=False)
+        
+        featured_product_obj = serializer.save()
+        featured_product_obj.product.is_featured=True
+        featured_product_obj.product.save()
 
 
 class DealOfTheDayProductAPIViewSet(ModelViewSet):

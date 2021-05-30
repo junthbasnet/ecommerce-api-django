@@ -12,6 +12,7 @@ from .models import (
     Question,
     Answer,
     RatingAndReview,
+    FeaturedProduct,
     DealOfTheDay,
     PopularPick,
     ProductForPreOrder,
@@ -294,6 +295,32 @@ class DealOfTheDayAdmin(admin.ModelAdmin):
             'General', {
             'fields': (
                 'product', 'start_date', 'end_date', 'priority',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
+    def image_thumbnail(self, obj):
+        try:
+            img_url=obj.product.hero_image.url
+        except :
+            img_url="https://imgur.com/2pO6gCt.png"
+        return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
+
+
+@admin.register(FeaturedProduct)
+class FeaturedProductAdmin(admin.ModelAdmin):
+    list_display = ('id', 'product', 'image_thumbnail')
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'product',
             )
         }),
         (

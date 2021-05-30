@@ -15,6 +15,7 @@ from .models import (
     ProductForPreOrder,
     ProductBundleForPreOrder,
     ProductBanner,
+    FeaturedProduct,
 )
 
 from users.serializers import UserSerializer
@@ -186,6 +187,15 @@ class ProductAnswerSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'user', 'created_on', 'modified_on',
         )
+
+
+class FeaturedProductSerializer(serializers.ModelSerializer):
+    """
+    Serializes FeaturedProduct model instances.
+    """
+    class Meta:
+        model=FeaturedProduct
+        fields = '__all__'
 
 
 class DealOfTheDaySerializer(serializers.ModelSerializer):
