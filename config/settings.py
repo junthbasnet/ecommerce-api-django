@@ -193,7 +193,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Firebase Settings
-FIREBASE_KEY = 'kunyoismarketing-ebe42-firebase-adminsdk-zdbg0-a97d63aded.json'
+FIREBASE_KEY = 'nebuyo-54447-firebase-adminsdk-9vnd0-78a01e55f2.json'
 FIREBASE_KEY_PATH = BASE_DIR / FIREBASE_KEY
 
 
