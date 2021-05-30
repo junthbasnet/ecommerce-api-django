@@ -9,7 +9,7 @@ from .models import Product
 from orders.models import OrderProduct
 
 
-def get_similar_products(query):
+def get_similar_products(product_obj):
     """
     Returns similar products.
     """
@@ -17,9 +17,13 @@ def get_similar_products(query):
         SearchVector('name', weight='A') +
         SearchVector('overview', weight='B')
     )
+    query = product_obj.name
     search_query = SearchQuery(query)
     queryset = (
-        Product.objects.annotate(
+        Product.objects.filter(
+            sub_category=product_obj.sub_category,
+        ).
+        annotate(
             rank=SearchRank(search_vector, search_query)
         )
         .order_by('-rank')
