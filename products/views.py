@@ -475,6 +475,32 @@ class ProductBundleForPreOrderAPIViewSet(ModelViewSet):
     filterset_fields = ('is_active',)
     ordering_fields = ['created_on',]
 
+    def perform_create(self, serializer):
+        """
+        Creates Product bundle model instances and sets description.
+        """
+        self.perform_set_description(serializer)
+
+    def perform_update(self, serializer):
+        """
+        Updates Product bundle model instances and sets description.
+        """
+        self.perform_set_description(serializer)
+    
+    def perform_set_description(self, serializer):
+        product_bundle_obj = serializer.save()
+        products = serializer.validated_data.get('products')
+        description = 'Contains '
+        for i, product in enumerate(products):
+            if i == 0:
+                description += f'{product.name}'
+            elif i == len(products) -1:
+                description += f', and {product.name}'
+            else:
+                description += f', {product.name}'
+        product_bundle_obj.description = description
+        product_bundle_obj.save()
+
 
 class ProductBannerAPIViewSet(ModelViewSet):
     """
@@ -485,9 +511,6 @@ class ProductBannerAPIViewSet(ModelViewSet):
     permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (OrderingFilter,)
     ordering_fields = ('created_on', 'priority',)
-
-    
-
 
     
 
