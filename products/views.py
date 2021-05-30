@@ -28,6 +28,7 @@ from .models import (
     PopularPick,
     ProductForPreOrder,
     ProductBundleForPreOrder,
+    ProductBanner,
 )
 from .filters import ProductFilterSet
 from .permissions import(
@@ -48,6 +49,7 @@ from .serializers import (
     PopularPickSerializer,
     ProductForPreOrderSerializer,
     ProductBundleForPreOrderSerializer,
+    ProductBannerSerializer,
 )
 from .utils import (
     get_similar_products,
@@ -445,6 +447,17 @@ class ProductBundleForPreOrderAPIViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_fields = ('is_active',)
     ordering_fields = ['created_on',]
+
+
+class ProductBannerAPIViewSet(ModelViewSet):
+    """
+    APIViewSet that manages product banners.
+    """
+    serializer_class = ProductBannerSerializer
+    queryset = ProductBanner.objects.all()
+    permission_classes = (IsAdminUserOrReadOnly,)
+    filter_backends = (OrderingFilter,)
+    ordering_fields = ('created_on', 'priority',)
 
     
 

@@ -14,6 +14,7 @@ from .models import (
     PopularPick,
     ProductForPreOrder,
     ProductBundleForPreOrder,
+    ProductBanner,
 )
 
 from users.serializers import UserSerializer
@@ -239,6 +240,15 @@ class ProductBundleForPreOrderSerializer(serializers.ModelSerializer):
             many=True,
             context={'request':self.context['request']}
         ).data
+
+
+class ProductBannerSerializer(serializers.ModelSerializer):
+    """
+    Serializes ProductBanner model instances.
+    """
+    class Meta:
+        model=ProductBanner
+        fields = '__all__'
 
 
 
