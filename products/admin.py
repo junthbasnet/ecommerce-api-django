@@ -16,6 +16,7 @@ from .models import (
     PopularPick,
     ProductForPreOrder,
     ProductBundleForPreOrder,
+    ProductBanner,
 )
 
 
@@ -406,5 +407,26 @@ class ProductBundleForPreOrderAdmin(admin.ModelAdmin):
         except :
             img_url="https://imgur.com/2pO6gCt.png"
         return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
+
+
+@admin.register(ProductBanner)
+class ProductBannerAdmin(admin.ModelAdmin):
+    list_display = ('id', 'label', 'product', 'priority',)
+    list_filter = ('priority',)
+    search_fields = ('product__name', 'label',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'label', 'product', 'priority',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
 
 
