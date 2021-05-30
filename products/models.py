@@ -393,6 +393,36 @@ class ProductBundleForPreOrder(SEOBaseModel):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+
+class ProductBanner(TimeStampedModel):
+    """
+    Model to store product banners
+    """
+    product = models.OneToOneField(
+        'Product',
+        on_delete=models.CASCADE,
+        related_name='banner',
+    )
+    label = models.CharField(_('label'), max_length=255, default='')
+    priority  = models.PositiveIntegerField(
+        default=0,
+        blank=True,
+        help_text=_('Higher the priority, first it comes in listing'),
+    )
+
+    class Meta:
+        verbose_name = _('Product Banner')
+        verbose_name_plural = _('Product Banner')
+        ordering = ('-priority', '-created_on',)
+    
+    def __str__(self):
+        return f'{self.product.name}'
+        
+    
+
+
+
     
 
     
