@@ -237,3 +237,8 @@ ESEWA_VERIFY_URL = "https://esewa.com.np/epay/transrec"
 FONEPAY_VERIFY_URL = 'https://clientapi.fonepay.com/api/merchantRequest/verificationMerchant?'
 IME_URL = "https://payment.imepay.com.np:7979/api/Web/Confirm"
 KHALTI_VERIFY_URL = "https://khalti.com/api/v2/payment/verify/"
+
+# redis-config
+REDIS_HOST='localhost'
+REDIS_PORT=6379
+REDIS_DB=1

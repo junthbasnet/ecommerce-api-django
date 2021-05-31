@@ -50,6 +50,7 @@ from .notify import (
     send_order_create_mail_to_user,
     send_pre_order_create_mail_to_user
 )
+from products.recommender import Recommender
 
 
 class PromoCodeAPIViewSet(ModelViewSet):
@@ -160,6 +161,12 @@ class CheckOutCreateAPIView(CreateAPIView):
         send_order_create_mail_to_user(order_obj)
         notify_user_about_order_creation(order_obj)
         notify_admin_about_order_creation(order_obj)
+        self.set_products_bought_together(order_obj)
+
+    def set_products_bought_together(self, order_obj):
+        products = order_obj.products.values_list('product', flat=True)
+        recommender = Recommender()
+        recommender.products_bought(products)
         
     def get_serializer_context(self):
         """

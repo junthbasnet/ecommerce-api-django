@@ -58,6 +58,7 @@ from .utils import (
     get_ordered_product_obj,
     get_product_obj,
 )
+from .recommender import Recommender
 
 
 class CategoryAPIViewSet(ModelViewSet):
@@ -511,6 +512,26 @@ class ProductBannerAPIViewSet(ModelViewSet):
     permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (OrderingFilter,)
     ordering_fields = ('created_on', 'priority',)
+
+
+class ProductBoughtTogetherAPIView(APIView):
+    """
+    APIView that returns products that are bought together.
+    """
+    def post(self, request, *args, **kwargs):
+        product_ids = request.data.get('product_ids', None)
+        if not product_ids:
+            return Response(
+                {
+                    'error':'product_ids is required.'
+                },
+                status.HTTP_400_BAD_REQUEST
+            )
+        recommender = Recommender()
+        suggested_products = recommender.suggest_products_for(product_ids)
+        return Response(ProductSerializer(suggested_products, many=True).data, status.HTTP_200_OK)
+        
+
 
     
 
