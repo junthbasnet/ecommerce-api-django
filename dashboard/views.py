@@ -27,7 +27,7 @@ class DashboardAPIView(APIView):
         todays_earnings = (
             Payment.objects.filter(
                 payment_status='verified',
-                created_on=timezone.now()
+                created_on__date=timezone.now().date()
             )
             .aggregate(todays_earnings=Sum('amount'))
             .get('todays_earnings') or 0.00
@@ -92,7 +92,7 @@ class DashboardAPIView(APIView):
                                 delivered_at=timezone.now().date(),
                                 delivery_status='Completed'
                             ).count()
-        orders_received_today = Order.objects.filter(created_on=timezone.now().date()).count()
+        orders_received_today = Order.objects.filter(created_on__date=timezone.now().date()).count()
         pending_order = Order.objects.filter(delivery_status='Pending').count()
 
         return Response(
