@@ -530,37 +530,3 @@ class ProductBoughtTogetherAPIView(APIView):
         recommender = Recommender()
         suggested_products = recommender.suggest_products_for(product_ids)
         return Response(ProductSerializer(suggested_products, many=True).data, status.HTTP_200_OK)
-        
-
-
-    
-
-
-
-    
-
-
-
-
-
-    
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
