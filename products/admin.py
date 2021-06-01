@@ -438,14 +438,15 @@ class ProductBundleForPreOrderAdmin(admin.ModelAdmin):
 
 @admin.register(ProductBanner)
 class ProductBannerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'label', 'product', 'priority',)
+    list_display = ('id', 'title', 'redirect_link', 'priority', 'image_thumbnail')
     list_filter = ('priority',)
-    search_fields = ('product__name', 'label',)
+    search_fields = ('title',)
     fieldsets = (
         (
             'General', {
             'fields': (
-                'label', 'product', 'priority',
+                'title', 'redirect_link', 'priority',
+                'image',
             )
         }),
         (
@@ -455,5 +456,12 @@ class ProductBannerAdmin(admin.ModelAdmin):
             ),
         }),
     )
+    
+    def image_thumbnail(self, obj):
+        try:
+            img_url=obj.image.url
+        except :
+            img_url="https://imgur.com/2pO6gCt.png"
+        return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
 
 

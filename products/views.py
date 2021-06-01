@@ -511,35 +511,3 @@ class ProductBannerAPIViewSet(ModelViewSet):
     permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (OrderingFilter,)
     ordering_fields = ('created_on', 'priority',)
-
-    
-
-
-
-    
-
-
-
-
-
-    
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

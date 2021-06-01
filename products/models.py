@@ -413,14 +413,11 @@ class ProductBundleForPreOrder(SEOBaseModel):
 
 class ProductBanner(TimeStampedModel):
     """
-    Model to store product banners
+    Model to store product secondary banners
     """
-    product = models.OneToOneField(
-        'Product',
-        on_delete=models.CASCADE,
-        related_name='banner',
-    )
-    label = models.CharField(_('label'), max_length=255, default='')
+    title = models.CharField(_('title'), max_length=255,)
+    image = models.ImageField(_('image'), upload_to='products/secondary_banner/')
+    redirect_link = models.URLField(_('redirect link'))
     priority  = models.PositiveIntegerField(
         default=0,
         blank=True,
@@ -428,54 +425,9 @@ class ProductBanner(TimeStampedModel):
     )
 
     class Meta:
-        verbose_name = _('Product Banner')
-        verbose_name_plural = _('Product Banner')
+        verbose_name = _('Product Secondary Banner')
+        verbose_name_plural = _('Product Secondary Banner')
         ordering = ('-priority', '-created_on',)
     
     def __str__(self):
-        return f'{self.product.name}'
-
-
-    
-
-
-
-    
-
-    
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
+        return f'{self.title}'
