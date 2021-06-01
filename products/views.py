@@ -403,26 +403,34 @@ class DealOfTheDayProductAPIViewSet(ModelViewSet):
     """
     APIViewSet that manages deal of the day products.
     query-params = deal-of-the-day
-    possible_values : ['all', 'inactive']
+    possible_values : ['active', 'inactive', 'expired', 'upcoming']
     """
     serializer_class = DealOfTheDaySerializer
-    queryset = DealOfTheDay.objects.none()
+    queryset = DealOfTheDay.objects.all()
     permission_classes=(IsAdminUserOrReadOnly,)
     filter_backends = (OrderingFilter,)
     ordering_fields = ['created_on', 'priority']
 
     def get_queryset(self):
-        queryset= DealOfTheDay.objects.filter(
-            start_date__lte=timezone.now().date(),
-            end_date__gte=timezone.now().date()
-        )
+        queryset = self.queryset 
         query_params = self.request.GET.get('deal-of-the-day')
-        if query_params == 'all':
-            queryset = DealOfTheDay.objects.all()        
+        if query_params == 'active':
+            queryset= DealOfTheDay.objects.filter(
+                start_date__lte=timezone.now().date(),
+                end_date__gte=timezone.now().date()
+            )
         if query_params == 'inactive':
             queryset= DealOfTheDay.objects.exclude(
                 start_date__lte=timezone.now().date(),
                 end_date__gte=timezone.now().date()
+            )      
+        if query_params == 'expired':
+            queryset= DealOfTheDay.objects.filter(
+                end_date__lt=timezone.now().date()
+            )      
+        if query_params == 'upcoming':
+            queryset= DealOfTheDay.objects.filter(
+                start_date__gt=timezone.now().date()
             )      
         return queryset
     
