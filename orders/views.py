@@ -157,9 +157,21 @@ class CheckOutCreateAPIView(CreateAPIView):
                 net_total = net_total,
                 estimated_delivery_date = order_obj.estimated_delivery_date  
             )
+
+            # add reward points to user's account
+            self.perform_add_reward_points_to_user_account(product_obj)
         send_order_create_mail_to_user(order_obj)
         notify_user_about_order_creation(order_obj)
         notify_admin_about_order_creation(order_obj)
+    
+    def perform_add_reward_points_to_user_account(self, product_obj):
+        """
+        adds reward points to user's account after purchasing an item.
+        """
+        user = self.request.user
+        product_reward_points = product_obj.reward_points
+        user.reward_points += product_reward_points
+        user.save()
         
     def get_serializer_context(self):
         """
