@@ -16,6 +16,7 @@ from .models import (
     ProductBundleForPreOrder,
     ProductBanner,
     FeaturedProduct,
+    Offer,
 )
 
 from users.serializers import UserSerializer
@@ -259,6 +260,18 @@ class ProductBannerSerializer(serializers.ModelSerializer):
     class Meta:
         model=ProductBanner
         fields = '__all__'
+
+
+class OfferSerializer(serializers.ModelSerializer):
+    """
+    Serializes offer model instances.
+    """
+    class Meta:
+        model=Offer
+        fields='__all__'
+        read_only_fields=(
+            'slug',
+        )
 
 
 

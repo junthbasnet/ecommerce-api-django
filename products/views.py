@@ -30,6 +30,7 @@ from .models import (
     ProductBundleForPreOrder,
     ProductBanner,
     FeaturedProduct,
+    Offer,
 )
 from .filters import ProductFilterSet
 from .permissions import(
@@ -52,6 +53,7 @@ from .serializers import (
     ProductBundleForPreOrderSerializer,
     ProductBannerSerializer,
     FeaturedProductSerializer,
+    OfferSerializer,
 )
 from .utils import (
     get_similar_products,
@@ -519,3 +521,50 @@ class ProductBannerAPIViewSet(ModelViewSet):
     permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (OrderingFilter,)
     ordering_fields = ('created_on', 'priority',)
+
+
+class OfferAPIViewSet(ModelViewSet):
+    """
+    APIViewSet that manages offers (Dashain Offer).
+    query-params = offers
+    possible_values : ['active', 'inactive', 'expired', 'upcoming']
+    """
+    serializer_class = OfferSerializer
+    queryset = Offer.objects.all()
+    permission_classes = (IsAdminUserOrReadOnly,)
+    filter_backends = (DjangoFilterBackend, OrderingFilter,)
+    filterset_fields=('is_deleted',)
+    ordering_fields = ['created_on',]
+
+    def get_queryset(self):
+        queryset = self.queryset 
+        query_params = self.request.GET.get('offers')
+        if query_params == 'active':
+            queryset= Offer.objects.filter(
+                start_date__lte=timezone.now().date(),
+                end_date__gte=timezone.now().date()
+            )
+        if query_params == 'inactive':
+            queryset= Offer.objects.exclude(
+                start_date__lte=timezone.now().date(),
+                end_date__gte=timezone.now().date()
+            )      
+        if query_params == 'expired':
+            queryset= Offer.objects.filter(
+                end_date__lt=timezone.now().date()
+            )      
+        if query_params == 'upcoming':
+            queryset= Offer.objects.filter(
+                start_date__gt=timezone.now().date()
+            )      
+        return queryset
+    
+        def get_serializer_context(self):
+            """
+            Extra context provided to the serializer class.
+            """
+            return {
+                'request': self.request,
+            }
+
+    
