@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import (
     IsAuthenticated,
     IsAdminUser,
+    IsAuthenticatedOrReadOnly,
 )
 from .models import (
     Brand,
@@ -186,7 +187,7 @@ class ProductQuestionAPIViewSet(ModelViewSet):
     """
     serializer_class = ProductQuestionSerializer
     queryset = Question.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('product', 'is_answered',)
 
@@ -201,7 +202,7 @@ class ProductAnswerAPIViewSet(ModelViewSet):
     """
     serializer_class = ProductAnswerSerializer
     queryset = Answer.objects.all()
-    permission_classes = (IsAdminUser,)
+    permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('question', )
 

@@ -266,12 +266,19 @@ class OfferSerializer(serializers.ModelSerializer):
     """
     Serializes offer model instances.
     """
+    products_data = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model=Offer
         fields='__all__'
         read_only_fields=(
             'slug',
         )
+    def get_products_data(self, obj):
+        return ProductSerializer(
+            obj.products.all(),
+            many=True,
+            context={'request':self.context['request']}
+        ).data
 
 
 
