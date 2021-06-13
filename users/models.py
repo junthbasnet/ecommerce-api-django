@@ -75,6 +75,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     gender = models.CharField(max_length=30, default='', blank=True, null=True,
                               help_text="Gender of user")
+    
+    reward_points = models.PositiveIntegerField(
+        _('reward points'),
+        default=0,
+        help_text=_(
+            'points received after purchasing product.'
+        )
+    )
+    
     objects = UserManager()
 
     EMAIL_FIELD = 'email'

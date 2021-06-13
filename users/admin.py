@@ -22,7 +22,7 @@ class UserCreationForm(forms.ModelForm):
 
 class UserAdmin(UserAdmin):
     add_form = UserCreationForm
-    list_display = ['id', 'email', 'phone_number', 'is_active', 'is_staff', ]
+    list_display = ['id', 'email', 'phone_number', 'is_active', 'is_staff', 'reward_points']
     ordering = ("email",)
     fieldsets = (
         (
@@ -36,6 +36,7 @@ class UserAdmin(UserAdmin):
                     'firebase_uuid',
                     'profile_picture',
                     'gender',
+                    'reward_points',
                 )
             }),
         (
@@ -52,9 +53,9 @@ class UserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('full_name', 'email', 'password',
-                       'phone_number', 'is_superuser', 'is_staff', 'is_active', 'date_joined', 'firebase_uuid',
-                       'profile_picture', 'push_notification', 'gender',
+            'fields': ('full_name', 'email', 'password', 'phone_number', 'is_superuser', 'is_staff',
+                        'is_active', 'date_joined', 'firebase_uuid',
+                       'profile_picture', 'push_notification', 'gender', 'reward_points',
                        )}
          ),
     )
