@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.db.models import Avg, Max, Min
 from django.utils import timezone
 
-from common.models import SEOBaseModel, TimeStampedModel
+from common.models import SEOBaseModel, TimeStampedModel, BaseModel
 
 
 class Category(SEOBaseModel):
@@ -198,6 +198,30 @@ class FeaturedProduct(TimeStampedModel):
     class Meta:
         verbose_name = _('Featured Product')
         verbose_name_plural = _('Featured Product')
+
+
+class Offer(BaseModel):
+    """
+    Model to store offers (Dashain Offer, Christmas Offer)
+    """
+    title = models.CharField(_('title'), max_length=255)
+    slug = models.CharField(_('slug'), max_length=255)
+    products = models.ManyToManyField(
+        'Product',
+        related_name='offers'
+    )
+    start_date = models.DateField(_('start date'))
+    end_date = models.DateField(_('end date'))
+
+    class Meta:
+        verbose_name = _('Offer')
+        verbose_name_plural = _('Offers')
+        ordering = ('-created_on',)
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 
 class DealOfTheDay(TimeStampedModel):

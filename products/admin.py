@@ -18,6 +18,7 @@ from .models import (
     ProductForPreOrder,
     ProductBundleForPreOrder,
     ProductBanner,
+    Offer,
 )
 
 
@@ -467,5 +468,30 @@ class ProductBannerAdmin(admin.ModelAdmin):
         except :
             img_url="https://imgur.com/2pO6gCt.png"
         return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
+
+
+@admin.register(Offer)
+class OfferAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'start_date', 'end_date',)
+    list_filter = ('products',)
+    search_fields = ('title',)
+    prepopulated_fields = {'slug': ('title',)}
+    filter_horizontal = ('products',)
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'title', 'slug', 'products',
+                'start_date', 'end_date',
+            )
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+                'deleted_on', 'is_deleted',
+            ),
+        }),
+    )
 
 
