@@ -146,7 +146,13 @@ class Product(SEOBaseModel):
     )
 
     is_featured = models.BooleanField(_('is featured'), default=False)
-
+    reward_points = models.PositiveIntegerField(
+        _('reward points'),
+        default=0,
+        help_text=_(
+            'points given to user after purchasing this product.'
+        )
+    )
 
     class Meta:
         verbose_name = _('Product')

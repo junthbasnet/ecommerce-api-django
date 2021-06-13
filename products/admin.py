@@ -97,7 +97,10 @@ class SubCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'sub_category', 'brand', 'quantity', 'selling_price', 'average_rating', 'views_count', 'is_featured', 'image_thumbnail',)
+    list_display = (
+        'id', 'name', 'sub_category', 'brand', 'quantity', 'selling_price',
+        'reward_points', 'average_rating', 'views_count', 'is_featured', 'image_thumbnail',
+    )
     list_filter = ('sub_category', 'sub_category__category', 'brand', 'is_featured',)
     search_fields = ('name', 'overview', 'sub_category__name', 'sub_category__description',)
     prepopulated_fields = {'slug': ('name',)}
@@ -105,8 +108,9 @@ class ProductAdmin(admin.ModelAdmin):
         (
             'General', {
             'fields': (
-                'sub_category', 'name', 'slug', 'brand', 'hero_image',
-                'quantity', 'items_sold', 'marked_price', 'selling_price', 'overview', 'average_rating', 'views_count', 'is_featured',
+                'sub_category', 'name', 'slug', 'brand', 'hero_image', 'quantity', 'items_sold',
+                'marked_price', 'selling_price', 'overview', 'average_rating', 'views_count',
+                'is_featured', 'reward_points',
             )
         }),
         (
