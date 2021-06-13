@@ -7,7 +7,7 @@ from .models import PaymentEnvironmentVariable
 
 def is_payment_method_obj_in_db(payment_method_name):
     """
-    Returns True if object doesn't exist.
+    Returns True if object exists with given method name.
     """
     try:
         payment_obj = PaymentMethod.objects.get(slug=payment_method_name)

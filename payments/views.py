@@ -36,6 +36,24 @@ class PaymentEnvironmentVariableAPIViewSet(ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = PaymentEnvironmentVariable.objects.all()
 
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        key = serializer.validated_data.get('key', None)
+        if key:
+            environment_variable_key_required_for = reverse_required_credentials().get(instance.key)
+            if is_payment_method_obj_in_db(environment_variable_key_required_for):
+                if instance.key != key:
+                    raise serializers.ValidationError(
+                        {
+                            'error_message': [
+                                f'{instance.key} is required to use {environment_variable_key_required_for}'
+                                
+                            ]
+                        },
+                        code='required_dependency'
+                    )
+        serializer.save() 
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
