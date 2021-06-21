@@ -24,7 +24,7 @@ jobs:
       - name: requirements installation
         run: cd /home/ubuntu/nebuyo-api/nebuyo-api
             && source venv/bin/activate
-            && /home/ubuntu/nebuyo-api/actions-runner/_work/nebuyo-api/nebuyo-api 
+            && cd /home/ubuntu/nebuyo-api/actions-runner/_work/nebuyo-api/nebuyo-api 
             && pip install -r requirements.txt
             
       - name: copy environment variables and migrate
