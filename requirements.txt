@@ -16,3 +16,5 @@ django-cors-headers==3.7.0
 django-cleanup==5.1.0
 coreapi==2.3.3
 django-json-widget==1.1.1
+django-storages==1.11.1
+boto3==1.17.97
