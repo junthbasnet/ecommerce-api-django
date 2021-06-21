@@ -61,6 +61,7 @@ from .utils import (
     get_ordered_product_obj,
     get_product_obj,
 )
+from .recommender import Recommender
 
 
 class CategoryAPIViewSet(ModelViewSet):
@@ -568,4 +569,72 @@ class OfferAPIViewSet(ModelViewSet):
                 'request': self.request,
             }
 
-    
+
+class ProductBoughtTogetherAPIView(APIView):
+    """
+    APIView that returns products that are bought together.
+    """
+    def post(self, request, *args, **kwargs):
+        product_ids = request.data.get('product_ids', None)
+        if product_ids is None:
+            return Response(
+                {
+                    'error':'product_ids is required.'
+                },
+                status.HTTP_400_BAD_REQUEST
+            )
+
+        top_selling_products = Product.objects.order_by('-items_sold')
+        if product_ids == []:
+            return Response(
+                {
+                    'data': ProductSerializer(top_selling_products, many=True).data
+                },
+                status.HTTP_200_OK
+            )
+            
+        recommender = Recommender()
+        suggested_products, suggested_products_ids = recommender.suggest_products_for(product_ids)
+        suggested_products += top_selling_products.exclude(id__in=suggested_products_ids)
+        return Response(
+            {
+                'data': ProductSerializer(suggested_products, many=True).data,
+            },
+            status.HTTP_200_OK
+        )
+
+
+class RecommendedProductsAPIView(APIView):
+    """
+    APIView that returns recommended products according to what the user has bought
+    previously, otherwise top selling products.
+    """
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+        top_selling_products = Product.objects.order_by('-items_sold')
+        if user.is_anonymous:
+            return Response(
+                {
+                    'data': ProductSerializer(top_selling_products, many=True).data
+                }
+            )
+
+        product_ids = user.ordered_products.values_list('product', flat=True)
+        if product_ids == []:
+            return Response(
+                {
+                    'data': ProductSerializer(top_selling_products, many=True).data
+                },
+                status.HTTP_200_OK
+            )
+        
+        recommender = Recommender()
+        suggested_products, suggested_products_ids = recommender.suggest_products_for(product_ids)
+        suggested_products += top_selling_products.exclude(id__in=suggested_products_ids)
+        return Response(
+            {
+                'data': ProductSerializer(suggested_products, many=True).data,
+            },
+            status.HTTP_200_OK
+        )
+        

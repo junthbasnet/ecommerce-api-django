@@ -50,6 +50,7 @@ from .notify import (
     send_order_create_mail_to_user,
     send_pre_order_create_mail_to_user
 )
+from products.recommender import Recommender
 
 
 class PromoCodeAPIViewSet(ModelViewSet):
@@ -58,6 +59,7 @@ class PromoCodeAPIViewSet(ModelViewSet):
     """
     serializer_class = PromoCodeSerializer
     queryset = PromoCode.objects.all()
+    permission_classes=(IsAdminUser,)
 
 
 class ApplyPromoCodeGenericAPIView(GenericAPIView):
@@ -101,6 +103,7 @@ class CheckOutCreateAPIView(CreateAPIView):
     OrderProduct model instances.
     """
     serializer_class = OrderSerializer
+    permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -163,6 +166,7 @@ class CheckOutCreateAPIView(CreateAPIView):
         send_order_create_mail_to_user(order_obj)
         notify_user_about_order_creation(order_obj)
         notify_admin_about_order_creation(order_obj)
+        self.set_products_bought_together(order_obj)
     
     def perform_add_reward_points_to_user_account(self, product_obj):
         """
@@ -172,6 +176,11 @@ class CheckOutCreateAPIView(CreateAPIView):
         product_reward_points = product_obj.reward_points
         user.reward_points += product_reward_points
         user.save()
+
+    def set_products_bought_together(self, order_obj):
+        products = order_obj.products.values_list('product', flat=True)
+        recommender = Recommender()
+        recommender.products_bought(products)
         
     def get_serializer_context(self):
         """
@@ -313,6 +322,7 @@ class PreOrderCheckOutCreateAPIView(CreateAPIView):
     PreOrderProductBundle model instance.
     """
     serializer_class = PreOrderProductBundleSerializer
+    permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -448,41 +458,3 @@ class MarkPreOrderAsCancelledAPIView(APIView):
             },
             status.HTTP_200_OK
         )
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-            
-        
-
-
-        
-
-
-
-
-
-
-
-
