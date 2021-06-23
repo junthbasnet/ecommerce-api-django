@@ -90,7 +90,10 @@ class UserAuthTokenSerializer(AuthTokenSerializer):
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
-    # password = serializers.CharField(min_length=8, write_only=True, required=True)
+    """
+    Serializes that serializes user registration
+    """
+
     id_token = serializers.CharField(
         label=_("Access Token"),
         style={'input_type': 'password'},
@@ -104,7 +107,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             'full_name',
             'phone_number',
             'id_token',
-            'gender',
+            # 'gender',
         )
 
     def validate(self, attrs):
@@ -115,7 +118,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(msg, code='authorization')
         user.full_name = attrs['full_name']
         user.phone_number = attrs['phone_number']
-        user.gender = attrs['gender']
+        # user.gender = attrs['gender']
         user.save()
         attrs['user'] = user
         return attrs

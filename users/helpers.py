@@ -13,14 +13,18 @@ def validate_id_token(id_token):
     decoded = verify_id_token(id_token)
     uuid = decoded.get('uid')
     email = decoded.get('email')
-    profile_pic = decoded.get('photoURL')
-    phone_number =decoded.get('phoneNumber')
+    try:
+        profile_pic = decoded.get('photoURL')
+    except :
+        profile_pic = None
+    phone_number = decoded.get('phoneNumber')
     if uuid and email:
         user, created = User.objects.get_or_create(email=email)
         if created:
             # need to save other fields too
             user.firebase_uuid = uuid
-            user.profile_pic = profile_pic
+            if profile_pic:
+                user.profile_pic = profile_pic
             user.phone_number = phone_number
             user.save()
     else:
