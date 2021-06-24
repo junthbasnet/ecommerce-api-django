@@ -71,6 +71,10 @@ class CategoryAPIViewSet(ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     permission_classes = (IsAdminUserOrReadOnly,)
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    ordering_fields = (
+        'priority',
+    )
 
 
     def destroy(self, request, *args, **kwargs):
