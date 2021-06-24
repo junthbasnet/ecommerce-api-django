@@ -24,7 +24,7 @@ from .models import (
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'priority', 'image_thumbnail',)
+    list_display = ('id', 'name', 'priority', 'is_popular', 'image_thumbnail',)
     list_filter = ('priority',)
     search_fields = ('name', 'description')
     prepopulated_fields = {'slug': ('name',)}
@@ -32,7 +32,7 @@ class CategoryAdmin(admin.ModelAdmin):
         (
             'General', {
             'fields': (
-                'name','slug', 'description', 'image', 'priority',
+                'name','slug', 'description', 'image', 'priority', 'is_popular'
             )
         }),
 

@@ -22,6 +22,7 @@ class Category(SEOBaseModel):
         blank=True,
         help_text=_('Higher the priority, first it comes in listing'),
     )
+    is_popular = models.BooleanField(_('is popular'), default=False)
 
     class Meta:
         verbose_name = _('Category')

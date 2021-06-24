@@ -72,6 +72,7 @@ class CategoryAPIViewSet(ModelViewSet):
     queryset = Category.objects.all()
     permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filterset_fields = ('is_popular',)
     ordering_fields = (
         'priority',
     )
