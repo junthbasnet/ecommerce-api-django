@@ -12,6 +12,7 @@ from .models import (
     Province,
     City,
     Area,
+    PageWiseSEOSetting,
 )
 from .utils import (
     validate_method_name,
@@ -35,6 +36,13 @@ class SEOSettingSerializer(serializers.ModelSerializer):
     class Meta:
         model = SEOSetting
         fields = '__all__'
+
+
+class PageWiseSEOSettingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PageWiseSEOSetting
+        fields = '__all__'
+        read_only_fields = ('page_title', 'route', 'created_on', 'modified_on')
 
 
 class SocialLinkSettingSerializer(serializers.ModelSerializer):

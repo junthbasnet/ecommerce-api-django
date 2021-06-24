@@ -34,6 +34,24 @@ class SEOSetting(SEOBaseModel):
         return self.og_title
 
 
+class PageWiseSEOSetting(TimeStampedModel):
+    page_title = models.CharField(max_length=200)
+    route = models.CharField(max_length=200)
+    og_url = models.URLField(blank=True, default="https://nebuyo.com/")
+    og_title = models.CharField(max_length=255, blank=True, default="")
+    og_description = models.TextField(blank=True, default="")
+    og_image = models.ImageField(upload_to='seo-uploads', null=True, blank=True)
+    meta_title = models.CharField(max_length=255, default="", blank=True)
+    meta_description = models.TextField(default="", blank=True)
+    keywords = models.TextField(default="", blank=True)
+    tags = models.TextField(default="", blank=True)
+
+    class Meta:
+        verbose_name=_('Page-Wise SEO Setting')
+        verbose_name_plural=_('Page-Wise SEO Setting')
+        ordering=('created_on',)
+
+
 class SocialLinkSetting(models.Model):
     icon = models.ImageField(null=True, blank=True, upload_to='settings')
     platform = models.CharField(max_length=255)

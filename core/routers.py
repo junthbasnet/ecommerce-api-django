@@ -10,7 +10,9 @@ from .views import (
     ProvinceAPIViewSet,
     CityAPIViewSet,
     AreaAPIViewSet,
+    PageWiseSEOSettingViewset,
 )
+
 
 router = DefaultRouter()
 router.register('social-links', SocialLinkViewSet)
@@ -22,3 +24,4 @@ router.register('testimonial', TestimonialViewSet)
 router.register('province', TestimonialViewSet)
 router.register('cities', TestimonialViewSet)
 router.register('areas', TestimonialViewSet)
+router.register('page-seo-settings', PageWiseSEOSettingViewset)

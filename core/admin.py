@@ -13,7 +13,43 @@ from .models import (
     Province,
     City,
     Area,
+    PageWiseSEOSetting,
 )
+
+
+@admin.register(PageWiseSEOSetting)
+class PageWiseSEOSettingsAdmin(admin.ModelAdmin):
+    list_display = ('page_title', 'route', 'image_thumbnail')
+    search_fields = ('page_title', 'route')
+    fieldsets = (
+        (
+            'General', {
+            'fields': (
+                'page_title', 'route',
+            )
+        }),
+
+        (
+            'SEO', {
+            'fields': (
+                'og_url', 'og_title', 'og_description', 'og_image',
+                'meta_title', 'meta_description', 'keywords', 'tags',
+            ),
+        }),
+        (
+            'Important Dates', {
+            'fields': (
+                'created_on', 'modified_on',
+            ),
+        }),
+    )
+
+    def image_thumbnail(self, obj):
+        try:
+            img_url=obj.og_image.url
+        except :
+            img_url="https://i.pinimg.com/originals/d0/17/47/d01747c4285afa4e7a6e8656c9cd60cb.png"
+        return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
 
 
 @admin.register(SiteSetting)
@@ -56,9 +92,7 @@ class PaymentMethodAdmin(admin.ModelAdmin):
         return mark_safe(f'<img src="{img_url}" style="width:15vh;object-fit:cover;"/>')
 
 
-@admin.register(SEOSetting)
-class SEOSettingsAdmin(admin.ModelAdmin):
-    list_display = ('og_title',)
+
 
 
 @admin.register(SocialLinkSetting)

@@ -21,6 +21,7 @@ from .models import (
     Province,
     City,
     Area,
+    PageWiseSEOSetting,
 )
 from .serializers import (
     SiteSettingSerializer,
@@ -34,11 +35,35 @@ from .serializers import (
     ProvinceSerializer,
     CitySerializer,
     AreaSerializer,
+    PageWiseSEOSettingSerializer,
 )
 
 
 def home_view(request):
     return HttpResponse("You are not authorized to view this page.")
+
+
+class PageWiseSEOSettingViewset(viewsets.ModelViewSet):
+    queryset = PageWiseSEOSetting.objects.all()
+    serializer_class = PageWiseSEOSettingSerializer
+    permission_classes = (IsAdminUserOrReadOnly,)
+    http_method_names = ('get', 'put', 'patch',)
+    filter_backends = [DjangoFilterBackend,]
+    filterset_fields = ['route', ]
+
+
+    def update(self, request, *args, **kwargs):
+        obj = self.get_object()
+        serializer = self.serializer_class(obj, data=request.data)
+        if serializer.is_valid():
+            obj = serializer.save()
+            return Response(
+                {
+                    'message': 'Successfully Edited Seo Settings',
+                    'data': serializer.data
+                }, status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
 class SiteSettingsAPI(APIView):
