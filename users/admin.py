@@ -3,7 +3,10 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 User = get_user_model()
-from .models import Shipping
+from .models import (
+    Shipping,
+    FacebookDataDelete,
+)
 
 
 class UserCreationForm(forms.ModelForm):
@@ -85,3 +88,9 @@ class ShippingAdmin(admin.ModelAdmin):
             ),
         }),
     )
+
+
+@admin.register(FacebookDataDelete)
+class FacebookDataDeleteAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'uuid', 'status')
+    list_filters = ('user',)

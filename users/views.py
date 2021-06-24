@@ -1,20 +1,35 @@
+import base64
+import json
+import hmac
+import hashlib
+from decouple import config
+from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status, mixins
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.generics import  ListCreateAPIView
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAdminUser,
+    AllowAny,
+)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
+
+from .helpers import delete_user_by_provider_id
+from .models import (
+    Shipping,
+    FacebookDataDelete,
+)
 from .permissions import (
     IsOwnerOrReadOnly,
 )
-from .models import Shipping
 from .serializers import (
     UserAuthTokenSerializer,
     UserSerializer,
@@ -169,6 +184,41 @@ class TokenCheckAPIView(APIView):
         return Response(
             {
                 'message':'Token Valid'
+            },
+            status.HTTP_200_OK
+        )
+
+
+class CheckUserDeletionStatus(APIView):
+    permission_classes = (AllowAny, )
+
+    def get(self, request, *args, **kwargs):
+        try:
+            f_del=FacebookDataDelete.objects.get(uuid=request.GET.get('user'))
+            return HttpResponse(f'Your data deletion process is {f_del.status}')
+        except :
+            return HttpResponse(f'Invalid Request')
+
+
+class FacebookDataDeletion(APIView):
+    permission_classes = (AllowAny, )
+
+    def post(self, request, *args, **kwargs):
+        signed_request = request.data['signed_request']
+        encoded_sig, payload = signed_request.split('.')
+        fb_secret = config("FACEBOOK_SECRET")
+        sig = base64.urlsafe_b64decode(encoded_sig+'==')
+        data = base64.urlsafe_b64decode(payload+'==').decode("utf-8")
+        expected_sig = hmac.new(key=fb_secret.encode("utf-8"), msg=payload.encode('utf-8'),digestmod=hashlib.sha256).digest()
+        if (sig != expected_sig):
+            return Response({'message': 'Not Found'}, status.HTTP_400_BAD_REQUEST)
+        delete_request = FacebookDataDelete.objects.create(status="initiated")
+        data=json.loads(data)
+        delete_user_by_provider_id(data['user_id'], delete_request)
+        return Response(
+            {
+                'url': f'http://3.15.39.153/api/users/check-status/?user={delete_request.uuid}',
+                'confirmation_code': delete_request.uuid
             },
             status.HTTP_200_OK
         )

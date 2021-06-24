@@ -1,6 +1,6 @@
 import firebase_admin
 from django.conf import settings
-from firebase_admin import credentials
+from firebase_admin import credentials, auth
 from firebase_admin.auth import verify_id_token
 
 from .models import User
@@ -30,3 +30,27 @@ def validate_id_token(id_token):
     else:
         user = None
     return user
+
+
+def delete_user_by_provider_id(provider_id, delete_request):
+    print("Called")
+    page = auth.list_users()
+    user_found = False
+    while page:
+        for user in page.users:
+            if user.provider_data[0].uid==provider_id:
+                print("User Found")
+                try:
+                    user_db = User.objects.get(email=user.email)
+                    user_db.is_active = False
+                    delete_request.user = user_db
+                    delete_request.status = "completed"
+                    delete_request.save()
+                    user_db.save()
+                except User.DoesNotExist:
+                    pass
+                auth.delete_user(user.uid)
+                break
+        if user_found:
+            break
+        page = page.get_next_page()
