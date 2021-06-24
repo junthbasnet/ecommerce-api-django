@@ -73,6 +73,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=True,
         help_text="Does the user wants push notifications from Nebuyo?"
     )
+    newsletter_notification = models.BooleanField(
+        _('newsletter notification'),
+        default=True,
+        help_text=_("Does the user wants newsletter subscriptions?")
+    )
     gender = models.CharField(max_length=30, default='', blank=True, null=True,
                               help_text="Gender of user")
     

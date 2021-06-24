@@ -11,6 +11,8 @@ from newsletter.helpers import random_digits
 from newsletter.models import Newsletter, Subscriber
 from newsletter.serializers import NewsletterSerializer, SubscriberSerializer
 from newsletter.tasks import send_subscription_email
+from users.models import User
+
 
 
 class SubscriberViewset(ModelViewSet):
@@ -90,7 +92,13 @@ class SubscribeAPI(APIView):
         if serializer.is_valid():
             obj = serializer.save()
             obj.code = obj.email.split('@')[0] + str(random_digits())
+            obj.active = True
             obj.save()
+            user = User.objects.filter(email=obj.email)
+            if user.exists():
+                u = user.first()
+                u.newsletter_notification = True
+                u.save()
             return Response(
                 {
                     'message': 'Successfully Subscribed'
@@ -115,6 +123,13 @@ class UnsubscribeAPI(APIView):
         code = self.request.query_params.get('code')
         try:
             sub = Subscriber.objects.get(email=email)
+            sub.active = False
+            sub.save()
+            user = User.objects.filter(email=sub.email)
+            if user.exists():
+                u = user.first()
+                u.newsletter_notification = True
+                u.save()
             if sub.code == code:
                 sub.delete()
                 return Response(
@@ -145,7 +160,7 @@ class SendSubsriptionMailAPI(APIView):
     permission_classes = (IsAdminUser,)
 
     def post(self, request, id):
-        subscribers = Subscriber.objects.all()
+        subscribers = Subscriber.objects.filter(active=True)
         if not subscribers.exists():
             return Response(
                 {

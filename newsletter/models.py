@@ -21,6 +21,8 @@ class Newsletter(TimeStampedModel):
 class Subscriber(models.Model):
     email = models.EmailField(default='admin@admin.com', unique=True)
     code = models.CharField(max_length=500, default='', blank=True)
+    active = models.BooleanField(default=True)
+
 
     def __str__(self):
         return self.email

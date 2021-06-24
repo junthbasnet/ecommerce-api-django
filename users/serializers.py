@@ -24,19 +24,21 @@ class UserSerializer(serializers.ModelSerializer):
             'profile_picture',
             'gender',
             'push_notification',
+            'newsletter_notification',
             'firebase_uuid',
             'is_staff',
             'is_superuser',
-            'reward_points',            
+            'reward_points',   
+            'date_joined',
         )
         read_only_fields = (
             'email',
             'is_active',
-            'push_notification',
             'firebase_uuid',
             'is_staff',
             'is_superuser',
             'reward_points',  
+            'date_joined',
         )
     
 
