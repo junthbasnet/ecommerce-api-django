@@ -98,6 +98,7 @@ class ProductSerializer(serializers.ModelSerializer):
     rating_per_stars = serializers.SerializerMethodField(read_only=True)
     is_deal_of_the_day_product = serializers.BooleanField(source='is_deal_of_the_day', read_only=True)
     is_todays_popular_pick_product = serializers.BooleanField(source='is_todays_popular_pick', read_only=True)
+    brand_data = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Product
@@ -123,6 +124,12 @@ class ProductSerializer(serializers.ModelSerializer):
             '4':four_stars,
             '5':five_stars,
         }
+    
+    def get_brand_data(self, obj):
+        """
+        Returns serialized brand model instance
+        """
+        return BrandSerializer(obj.brand).data
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
