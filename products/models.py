@@ -447,6 +447,7 @@ class ProductBanner(TimeStampedModel):
     Model to store product secondary banners
     """
     title = models.CharField(_('title'), max_length=255,)
+    product_name = models.CharField(_('product name'), max_length=512)
     image = models.ImageField(_('image'), upload_to='products/secondary_banner/')
     redirect_link = models.URLField(_('redirect link'))
     priority  = models.PositiveIntegerField(

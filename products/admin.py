@@ -443,14 +443,14 @@ class ProductBundleForPreOrderAdmin(admin.ModelAdmin):
 
 @admin.register(ProductBanner)
 class ProductBannerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'redirect_link', 'priority', 'image_thumbnail')
+    list_display = ('id', 'title', 'product_name', 'redirect_link', 'priority', 'image_thumbnail')
     list_filter = ('priority',)
     search_fields = ('title',)
     fieldsets = (
         (
             'General', {
             'fields': (
-                'title', 'redirect_link', 'priority',
+                'title', 'product_name', 'redirect_link', 'priority',
                 'image',
             )
         }),

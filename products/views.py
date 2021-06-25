@@ -529,6 +529,9 @@ class ProductBannerAPIViewSet(ModelViewSet):
     filter_backends = (OrderingFilter,)
     ordering_fields = ('created_on', 'priority',)
 
+    def get_queryset(self):
+        return ProductBanner.objects.all()[:2]
+
 
 class OfferAPIViewSet(ModelViewSet):
     """
