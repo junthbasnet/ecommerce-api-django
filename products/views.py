@@ -627,7 +627,7 @@ class RecommendedProductsAPIView(APIView):
                 }
             )
 
-        product_ids = user.ordered_products.values_list('product', flat=True)
+        product_ids = [user.ordered_products.values_list('product', flat=True)]
         if product_ids == []:
             return Response(
                 {
