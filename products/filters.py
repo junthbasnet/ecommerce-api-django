@@ -22,5 +22,5 @@ class ProductFilterSet(filters.FilterSet):
         fields = (
             'sub_category', 'sub_category__slug', 'sub_category__category',
             'sub_category__category__slug', 'brand', 'selling_price',
-            'min_avg_rating',
+            'min_avg_rating', 'is_featured',
         )

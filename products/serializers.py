@@ -194,9 +194,13 @@ class FeaturedProductSerializer(serializers.ModelSerializer):
     """
     Serializes FeaturedProduct model instances.
     """
+    product_data = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model=FeaturedProduct
         fields = '__all__'
+        
+    def get_product_data(self, obj):
+        return ProductSerializer(obj.product, context={'request':self.context['request']}).data
 
 
 class DealOfTheDaySerializer(serializers.ModelSerializer):
