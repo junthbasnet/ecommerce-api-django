@@ -15,6 +15,7 @@ from rest_framework.permissions import (
 from payments.models import Payment
 from products.models import Product
 from orders.models import Order, OrderProduct
+from ..helpers.weekly_sales import get_weekly_sales
 
 
 class DashboardAPIView(APIView):
@@ -81,9 +82,8 @@ class DashboardAPIView(APIView):
             )
             .annotate(
                 day=TruncDay('created_on'),
-                day_number=ExtractDay('created_on'),
             )
-            .values('day', 'day_number')
+            .values('day')
             .annotate(sum=Sum('amount'))
         )
 
@@ -95,14 +95,16 @@ class DashboardAPIView(APIView):
         orders_received_today = Order.objects.filter(created_on__date=timezone.now().date()).count()
         pending_order = Order.objects.filter(delivery_status='Pending').count()
 
+        weekly_sales = get_weekly_sales()
+
         return Response(
             {
                 # Earnings
                 'todays_earnings': todays_earnings,
-                'total_earnings': total_earnings,
-                'monthly_earnings': formatted_monthly_earnings,
-                'weekly_earnings': weekly_earnings,
-                'daily_earnings': daily_earnings,
+                # 'total_earnings': total_earnings,
+                # 'monthly_earnings': formatted_monthly_earnings,
+                # 'weekly_earnings': weekly_earnings,
+                # 'daily_earnings': daily_earnings,
 
                 # Products
                 'products_sold_today': products_sold_today,
@@ -110,6 +112,9 @@ class DashboardAPIView(APIView):
                 # Orders
                 'orders_received_today': orders_received_today,
                 'pending_order': pending_order,
+
+                # weekly sales
+                'weekly_sales': weekly_sales
             },
             status.HTTP_200_OK
         )

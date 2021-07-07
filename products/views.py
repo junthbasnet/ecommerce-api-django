@@ -245,7 +245,7 @@ class CompareSimilarProductsListAPIView(ListAPIView):
                 status.HTTP_406_NOT_ACCEPTABLE
             )
         
-        queryset = get_similar_products(product_obj)      
+        queryset = get_similar_products(product_obj)[:3]      
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
