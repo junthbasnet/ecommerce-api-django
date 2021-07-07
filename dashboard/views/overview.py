@@ -1,6 +1,7 @@
 import calendar
 from django.db.models import Avg, Max, Min, F, Sum
 from django.utils import timezone
+from datetime import timedelta
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,10 +16,10 @@ from rest_framework.permissions import (
 from payments.models import Payment
 from products.models import Product
 from orders.models import Order, OrderProduct
-from ..helpers.weekly_sales import get_weekly_sales
+from ..helpers.sales import get_sales_data
 
 
-class DashboardAPIView(APIView):
+class OverviewAPIView(APIView):
     """
     APiView that returns weekly, monthly earnings and orders and products meta data.
     """
@@ -95,7 +96,10 @@ class DashboardAPIView(APIView):
         orders_received_today = Order.objects.filter(created_on__date=timezone.now().date()).count()
         pending_order = Order.objects.filter(delivery_status='Pending').count()
 
-        weekly_sales = get_weekly_sales()
+        
+        start_date = timezone.now().date() - timedelta(days=6)
+        end_date = timezone.now().date()
+        weekly_sales = get_sales_data(start_date, end_date)
 
         return Response(
             {
