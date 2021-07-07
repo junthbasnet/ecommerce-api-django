@@ -12,12 +12,22 @@ from common.managers import DefaultManager
 from common.utils import compress
 
 
-class SiteSetting(models.Model):
+class SiteSetting(TimeStampedModel):
     site_icon = models.ImageField(null=True, blank=True, upload_to='settings')
     site_title = models.CharField(max_length=255, blank=True)
     contact_number = models.CharField(max_length=25, default="", blank=True)
     address = models.CharField(max_length=255, default="", blank=True)
     email = models.EmailField(default="admin@akku.gg", blank=True)
+    vat = models.PositiveIntegerField(
+        _('VAT (in %)'),
+        default=0,
+        help_text=_('vat added to the final price during checkout')
+    )
+
+    class Meta:
+        verbose_name = _('Site Setting')
+        verbose_name_plural = _('Site Settings')
+        ordering = ('-created_on',)
 
     def __str__(self):
         return self.site_title

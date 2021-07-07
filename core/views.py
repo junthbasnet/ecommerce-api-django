@@ -66,40 +66,29 @@ class PageWiseSEOSettingViewset(viewsets.ModelViewSet):
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
-class SiteSettingsAPI(APIView):
+class SiteSettingAPIViewSet(viewsets.ModelViewSet):
+    """
+    APIViewSet that manages site settings.
+    """
     serializer_class = SiteSettingSerializer
+    queryset = SiteSetting.objects.all()
     permission_classes = (IsAdminUserOrReadOnly,)
 
-    def get(self, request):
-        site_settings = SiteSetting.objects.all()
-        if site_settings.exists():
-            return Response(SiteSettingSerializer(site_settings[0]).data, status.HTTP_200_OK)
-        return Response(
-            {
-                'message': "No Settings"
-            },
-            status.HTTP_400_BAD_REQUEST
-        )
-
-    def post(self, request):
-        site_settings = SiteSetting.objects.all()
-        if site_settings.exists():
-            serializer = SiteSettingSerializer(data=request.data, instance=site_settings[0])
-            if serializer.is_valid():
-                p = serializer.save()
-                return Response(serializer.data, status.HTTP_200_OK)
+    def create(self, request, *args, **kwargs):
+        """
+        Create a model instance
+        """
+        if SiteSetting.objects.count() >= 1:
             return Response(
                 {
-                    'message': "Invalid Data"
-                }, status.HTTP_201_CREATED
+                    'message': 'Just update the one you have already created.'
+                },
+                status.HTTP_423_LOCKED
             )
-
-        else:
-            serializer = SiteSettingSerializer(data=request.data)
-            if serializer.is_valid():
-                p = serializer.save()
-                return Response(SiteSettingSerializer(p).data, status.HTTP_200_OK)
-            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class SEOSettingsAPI(APIView):

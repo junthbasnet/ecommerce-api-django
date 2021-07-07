@@ -11,6 +11,7 @@ from .views import (
     CityAPIViewSet,
     AreaAPIViewSet,
     PageWiseSEOSettingViewset,
+    SiteSettingAPIViewSet,
 )
 
 
@@ -25,3 +26,4 @@ router.register('province', TestimonialViewSet)
 router.register('cities', TestimonialViewSet)
 router.register('areas', TestimonialViewSet)
 router.register('page-seo-settings', PageWiseSEOSettingViewset)
+router.register('site-settings', SiteSettingAPIViewSet)
