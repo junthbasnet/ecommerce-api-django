@@ -5,6 +5,7 @@ from rest_framework import serializers
 from payments.models import Payment
 from products.models import Product
 from .models import Order, OrderProduct, PreOrderProductBundle
+from core.models import SiteSetting
 
 
 def validate_payment(payment_uuid, user):
@@ -64,14 +65,53 @@ def calculate_final_price(delivery_charge, discount, cart_items, vat):
         product_price_list.append(product_price)
     products_price =  sum(product_price_list)
     calculated_final_price = products_price + delivery_charge - discount + vat
-    return calculated_final_price
+    return calculated_final_price, products_price
+
+
+def get_vat_percentage():
+    """
+    Returns vat percentage to be added to the total_products_price during checkout.
+    """
+    try:
+        site_setting_obj = SiteSetting.objects.latest('created_on')
+        vat = site_setting_obj.vat
+    except SiteSetting.ObjectDoesNotExist:
+        raise serializers.ValidationError(
+            {
+                'error_message': [
+                    f"Please create site setting object and set vat in percentage."
+                ]
+            },
+            code='no_site_setting'
+        )
+    return vat
+
+
+def validate_vat_calculation(client_calculated_vat, cart_items):
+    """
+    Returns True or raises validation error if server calculated vat is not
+    equal to client calculated vat
+    """
+    _, products_price = calculate_final_price(0, 0, cart_items, 0)
+    vat_in_percentage_to_be_applied = get_vat_percentage()
+    server_calculated_vat = (vat_in_percentage_to_be_applied * products_price) / 100
+    if int(server_calculated_vat) != int(client_calculated_vat):
+        raise serializers.ValidationError(
+            {
+                'error_message': [
+                    f"Client calculated vat: {client_calculated_vat}. Server calculated vat: {server_calculated_vat}"
+                ]
+            },
+            code='vat_conflict'
+        )
+    return True
 
 
 def validate_final_price_client_server(client_final_price, delivery_charge, discount, cart_items, vat):
     """
     Returns True or raises validation error.
     """
-    calculated_final_price = calculate_final_price(delivery_charge, discount, cart_items, vat)
+    calculated_final_price, _ = calculate_final_price(delivery_charge, discount, cart_items, vat)
     if int(calculated_final_price) != int(client_final_price):
         raise serializers.ValidationError(
             {
@@ -88,7 +128,7 @@ def validate_final_price_with_payment_obj(payment_obj, delivery_charge, discount
     """
     Returns True or raises validation error.
     """
-    calculated_final_price = calculate_final_price(delivery_charge, discount, cart_items, vat)
+    calculated_final_price, _ = calculate_final_price(delivery_charge, discount, cart_items, vat)
     if payment_obj.amount < int(calculated_final_price):
         raise serializers.ValidationError(
             {
@@ -145,6 +185,26 @@ def get_order_obj(order_id):
             code='invalid_order_id'
         )
     return order_obj
+
+
+def validate_vat_calculation_for_preorder(client_calculated_vat, amount):
+    """
+    Returns True or raises validation error if server calculated vat is not
+    equal to client calculated vat
+    """
+    vat_in_percentage_to_be_applied = get_vat_percentage()
+    server_calculated_vat = (vat_in_percentage_to_be_applied * amount) / 100
+    if int(server_calculated_vat) != int(client_calculated_vat):
+        raise serializers.ValidationError(
+            {
+                'error_message': [
+                    f"Client calculated vat: {client_calculated_vat}. Server calculated vat: {server_calculated_vat}"
+                ]
+            },
+            code='vat_conflict'
+        )
+    return True
+    
 
 
 def validate_final_price_client_server_for_pre_order(client_final_price, delivery_charge, discount, product_bundle_obj, quantity, vat):

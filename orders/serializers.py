@@ -12,6 +12,8 @@ from .utils import (
     is_quantity_less_than_or_equal_to,
     validate_final_price_client_server_for_pre_order,
     validate_final_price_of_pre_order_with_payment_obj,
+    validate_vat_calculation,
+    validate_vat_calculation_for_preorder,
 )
 from users.serializers import (
     UserSerializer,
@@ -95,8 +97,10 @@ class OrderSerializer(serializers.ModelSerializer):
                 },
                 code='no_shipping'
             )
+        
 
-        # validate_final_price_client_server(client_final_price, delivery_charge, discount, cart_items, vat)
+        validate_vat_calculation(vat, cart_items)
+        validate_final_price_client_server(client_final_price, delivery_charge, discount, cart_items, vat)
         is_quantity_less_than_or_equal_to(cart_items)
         payment_obj = validate_payment(payment_uuid, user)
         validate_final_price_with_payment_obj(payment_obj, delivery_charge, discount, cart_items, vat)
@@ -168,7 +172,7 @@ class PreOrderProductBundleSerializer(serializers.ModelSerializer):
                 },
                 code='no_product_bundle'
             )
-
+        validate_vat_calculation_for_preorder(vat, product_bundle_obj.selling_price * quantity)
         validate_final_price_client_server_for_pre_order(
             client_final_price, 
             delivery_charge, 
