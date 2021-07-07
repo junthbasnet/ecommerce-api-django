@@ -54,7 +54,7 @@ class PageWiseSEOSettingsAdmin(admin.ModelAdmin):
 
 @admin.register(SiteSetting)
 class SiteSettingsAdmin(admin.ModelAdmin):
-    list_display = ('site_title', 'contact_number', 'address', 'email', 'vat',)
+    list_display = ('id', 'site_title', 'contact_number', 'address', 'email', 'vat',)
 
 
 @admin.register(Testimonial)

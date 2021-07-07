@@ -51,6 +51,7 @@ class OrderSerializer(serializers.ModelSerializer):
     """
     payment_uuid = serializers.CharField(max_length=63, write_only=True, required=True)
     cart_items = serializers.ListField(allow_empty=False, write_only=True)
+    vat = serializers.DecimalField(max_digits=10, decimal_places=2, write_only=True)
     products = OrderProductSerializer(many=True, read_only=True)
     user = serializers.SerializerMethodField(read_only=True)
     shipping_data = serializers.SerializerMethodField(read_only=True)
@@ -60,7 +61,7 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'order_uuid', 'user', 'payment', 'delivery_status', 'estimated_delivery_date',
             'delivered_at', 'shipping', 'discount', 'delivery_charge', 'final_price', 'cart_items',
-            'payment_uuid', 'products', 'shipping_data', 'created_on', 'modified_on',
+            'payment_uuid', 'products', 'shipping_data', 'created_on', 'modified_on', 'vat',
         )
         read_only_fields = (
             'order_uuid', 'user', 'payment', 'delivery_status', 'estimated_delivery_date',
@@ -82,6 +83,7 @@ class OrderSerializer(serializers.ModelSerializer):
         client_final_price = data.get('final_price', None)
         delivery_charge = data.get('delivery_charge', 0)
         discount = data.get('discount', 0)
+        vat = data.get('vat', None)
         cart_items = data.get('cart_items')
         shipping = data.get('shipping', None)
         if not shipping:
@@ -94,13 +96,12 @@ class OrderSerializer(serializers.ModelSerializer):
                 code='no_shipping'
             )
 
-        validate_final_price_client_server(client_final_price, delivery_charge, discount, cart_items)
+        # validate_final_price_client_server(client_final_price, delivery_charge, discount, cart_items, vat)
         is_quantity_less_than_or_equal_to(cart_items)
         payment_obj = validate_payment(payment_uuid, user)
+        validate_final_price_with_payment_obj(payment_obj, delivery_charge, discount, cart_items, vat)
         payment_obj.order_assigned=True
         payment_obj.save()
-
-        validate_final_price_with_payment_obj(payment_obj, delivery_charge, discount, cart_items)
 
         data['final_price'] = payment_obj.amount
         data['payment_obj'] = payment_obj
@@ -113,13 +114,15 @@ class PreOrderProductBundleSerializer(serializers.ModelSerializer):
     """
     payment_uuid = serializers.CharField(max_length=63, write_only=True, required=True)
     product_bundle_data = serializers.SerializerMethodField(read_only=True)
+    vat = serializers.DecimalField(max_digits=10, decimal_places=2, write_only=True)
+
     class Meta:
         model=PreOrderProductBundle
         fields = (
             'id', 'pre_order_uuid', 'product_bundle', 'quantity', 'user', 'payment',
             'delivery_status', 'estimated_delivery_date', 'delivered_at', 'shipping',
             'discount', 'delivery_charge', 'final_price', 'payment_uuid',
-            'created_on', 'modified_on', 'product_bundle_data'
+            'created_on', 'modified_on', 'product_bundle_data', 'vat',
         )
         read_only_fields = (
             'pre_order_uuid', 'user', 'payment', 'delivery_status',
@@ -141,6 +144,7 @@ class PreOrderProductBundleSerializer(serializers.ModelSerializer):
         payment_uuid = data.get('payment_uuid', None)
         client_final_price = data.get('final_price', None)
         delivery_charge = data.get('delivery_charge', 0)
+        vat = data.get('vat', 0)
         quantity = data.get('quantity', 1)
         discount = data.get('discount', 0)
         shipping = data.get('shipping', None)
@@ -165,12 +169,26 @@ class PreOrderProductBundleSerializer(serializers.ModelSerializer):
                 code='no_product_bundle'
             )
 
-        validate_final_price_client_server_for_pre_order(client_final_price, delivery_charge, discount, product_bundle_obj, quantity)
+        validate_final_price_client_server_for_pre_order(
+            client_final_price, 
+            delivery_charge, 
+            discount, 
+            product_bundle_obj,
+            quantity,
+            vat,
+        )
         payment_obj = validate_payment(payment_uuid, user)
+        validate_final_price_of_pre_order_with_payment_obj(
+            payment_obj, 
+            delivery_charge, 
+            discount, 
+            product_bundle_obj, 
+            quantity,
+            vat
+        )
         payment_obj.order_assigned=True
         payment_obj.save()
 
-        validate_final_price_of_pre_order_with_payment_obj(payment_obj, delivery_charge, discount, product_bundle_obj, quantity)
 
         data['final_price'] = payment_obj.amount
         data['payment_obj'] = payment_obj

@@ -50,7 +50,7 @@ def get_product_obj(product_id):
     return product_obj
 
 
-def calculate_final_price(delivery_charge, discount, cart_items):
+def calculate_final_price(delivery_charge, discount, cart_items, vat):
     """
     Calculates final price from cart items.
     """
@@ -63,16 +63,16 @@ def calculate_final_price(delivery_charge, discount, cart_items):
         product_price = per_product_price * product_quantity
         product_price_list.append(product_price)
     products_price =  sum(product_price_list)
-    calculated_final_price = products_price + delivery_charge - discount
+    calculated_final_price = products_price + delivery_charge - discount + vat
     return calculated_final_price
 
 
-def validate_final_price_client_server(client_final_price, delivery_charge, discount, cart_items):
+def validate_final_price_client_server(client_final_price, delivery_charge, discount, cart_items, vat):
     """
     Returns True or raises validation error.
     """
-    calculated_final_price = calculate_final_price(delivery_charge, discount, cart_items)
-    if calculated_final_price != client_final_price:
+    calculated_final_price = calculate_final_price(delivery_charge, discount, cart_items, vat)
+    if int(calculated_final_price) != int(client_final_price):
         raise serializers.ValidationError(
             {
                 'error_message': [
@@ -84,12 +84,12 @@ def validate_final_price_client_server(client_final_price, delivery_charge, disc
     return True
 
 
-def validate_final_price_with_payment_obj(payment_obj, delivery_charge, discount, cart_items):
+def validate_final_price_with_payment_obj(payment_obj, delivery_charge, discount, cart_items, vat):
     """
     Returns True or raises validation error.
     """
-    calculated_final_price = calculate_final_price(delivery_charge, discount, cart_items)
-    if payment_obj.amount < calculated_final_price:
+    calculated_final_price = calculate_final_price(delivery_charge, discount, cart_items, vat)
+    if payment_obj.amount < int(calculated_final_price):
         raise serializers.ValidationError(
             {
                 'error_message': [
@@ -147,12 +147,12 @@ def get_order_obj(order_id):
     return order_obj
 
 
-def validate_final_price_client_server_for_pre_order(client_final_price, delivery_charge, discount, product_bundle_obj, quantity):
+def validate_final_price_client_server_for_pre_order(client_final_price, delivery_charge, discount, product_bundle_obj, quantity, vat):
     """
     Returns true or raises validation error.
     """
-    calculated_final_price = (product_bundle_obj.selling_price * quantity) - discount + delivery_charge
-    if calculated_final_price != client_final_price:
+    calculated_final_price = (product_bundle_obj.selling_price * quantity) - discount + delivery_charge + vat
+    if int(calculated_final_price) != int(client_final_price):
         raise serializers.ValidationError(
             {
                 'error_message': [
@@ -164,12 +164,12 @@ def validate_final_price_client_server_for_pre_order(client_final_price, deliver
     return True
 
 
-def validate_final_price_of_pre_order_with_payment_obj(payment_obj, delivery_charge, discount, product_bundle_obj, quantity):
+def validate_final_price_of_pre_order_with_payment_obj(payment_obj, delivery_charge, discount, product_bundle_obj, quantity, vat):
     """
     Returns True or raises validation error.
     """
-    calculated_final_price = (product_bundle_obj.selling_price * quantity) - discount + delivery_charge
-    if payment_obj.amount < calculated_final_price:
+    calculated_final_price = (product_bundle_obj.selling_price * quantity) - discount + delivery_charge + vat
+    if payment_obj.amount < int(calculated_final_price):
         raise serializers.ValidationError(
             {
                 'error_message': [
