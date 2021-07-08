@@ -17,6 +17,11 @@ from dashboard.helpers.sales import (
 from dashboard.helpers.orders import (
     get_total_orders_from_to,
     get_orders_pie_chart_category_wise,
+    get_weeks_order_data,
+)
+from dashboard.helpers.best_selling import (
+    get_todays_best_selling_products,
+    get_weeks_best_selling_products,
 )
 
 User = get_user_model()
@@ -37,9 +42,9 @@ class AccountingAPIView(APIView):
         end_date = timezone.now().date()
         weekly_sales = get_sales_data(start_date, end_date)
 
-
+        # Piechart - Today
         orders_today = get_total_orders_from_to(timezone.now().date(), timezone.now().date())
-        sales_today = get_total_sales_from_to(timezone.now().date(), timezone.now().date())
+        sales_today = get_total_sales_from_to(timezone.now().date(), timezone.now().date()) or 0.00
         orders_today_pie_chart = get_orders_pie_chart_category_wise(timezone.now().date(), timezone.now().date())
         sales_today_pie_chart = get_sales_pie_chart_category_wise(timezone.now().date(), timezone.now().date())
 
@@ -55,11 +60,18 @@ class AccountingAPIView(APIView):
                 # Second row
                 'weekly_sales': weekly_sales,
 
-                # Third row
+                # Third row : Left
                 'sales_today': sales_today,
                 'orders_today': orders_today,
                 'sales_today_pie_chart': sales_today_pie_chart,
                 'orders_today_pie_chart': orders_today_pie_chart,
+
+                # Third Row: Right
+                'todays_best_selling_product': get_todays_best_selling_products(),
+                'weeks_best_selling_product': get_weeks_best_selling_products(),
+
+                # Fourth  Row
+                'order_data_for_last_seven_days': get_weeks_order_data(),
             },
             status.HTTP_200_OK
         )

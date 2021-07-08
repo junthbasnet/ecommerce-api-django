@@ -1,21 +1,21 @@
-from payments.models import Payment
-from datetime import timedelta, date
+import pytz
+from datetime import timedelta
 from django.utils import timezone
 from django.db.models.functions import (
     TruncMonth, ExtractMonth, TruncDay,
     TruncDate, Trunc, ExtractDay, TruncWeek,
     ExtractWeek, ExtractWeekDay,
 )
+from django.db.models import F, Sum, Count
 from products.models import Product, Category
-import pytz
-from django.db.models import Avg, Max, Min, F, Sum, Count
+from payments.models import Payment
 
 
 def get_sales_data(start_date, end_date):
     """
-    Returns weekly sales day wise
+    Returns sales data for start_date to end date.
     """
-    weekly_sales = (
+    sales_data_from_to = (
         Payment.objects.filter(
             created_on__date__range=(start_date, end_date),
             payment_status='verified',
@@ -25,8 +25,7 @@ def get_sales_data(start_date, end_date):
         .values('date',)
         .annotate(sum=Sum('amount'))
     )
-
-    return weekly_sales
+    return sales_data_from_to
 
 
 def get_total_sales_from_to(start_date, end_date):
