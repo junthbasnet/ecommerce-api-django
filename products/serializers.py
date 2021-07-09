@@ -80,10 +80,10 @@ class RatingAndReviewSerializer(serializers.ModelSerializer):
         model = RatingAndReview
         fields = (
             'id', 'user', 'product', 'rating', 'review', 'image',
-            'ordered_product_id',
+            'ordered_product_id', 'created_on', 'modified_on',
         )
         read_only_fields = (
-            'user', 'product',
+            'user', 'product', 'created_on', 'modified_on',
         )
 
 
