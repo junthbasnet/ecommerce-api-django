@@ -93,7 +93,6 @@ class OrderProduct(BaseModel):
     class Meta:
         verbose_name='Order Product'
         verbose_name_plural='Order Products'
-        ordering = ('-created_on',)
 
 
 class Order(BaseModel):
