@@ -194,9 +194,9 @@ class ProductQuestionAPIViewSet(ModelViewSet):
     serializer_class = ProductQuestionSerializer
     queryset = Question.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_fields = ('product', 'is_answered',)
-
+    ordering_fields = ('created_on', 'modified_on',)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
