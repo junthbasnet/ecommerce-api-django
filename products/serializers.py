@@ -92,6 +92,7 @@ class ProductSerializer(serializers.ModelSerializer):
     Serializes Product model instances.
     """
     category_name = serializers.CharField(source='sub_category.category.name', read_only=True)
+    category_id = serializers.IntegerField(source='sub_category.category.id', read_only=True)
     sub_category_name = serializers.CharField(source='sub_category.name', read_only=True)
     # avg_rating = serializers.CharField(source='average_rating', read_only=True)
     count_of_user_who_rated = serializers.IntegerField(source='count_of_users_who_rated', read_only=True)
