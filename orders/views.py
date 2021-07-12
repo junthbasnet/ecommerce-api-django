@@ -1,5 +1,6 @@
 
 from datetime import timedelta
+from decimal import Decimal
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -33,6 +34,7 @@ from .serializers import (
     OrderSerializer,
     OrderProductSerializer,
     PreOrderProductBundleSerializer,
+    OrderCheckoutCalculationSerializer,
 )
 from .utils import (
     get_product_obj,
@@ -41,6 +43,11 @@ from .utils import (
     generate_order_uuid,
     generate_pre_order_uuid,
     get_estimated_delivery_date,
+    calculate_final_price,
+    get_vat_percentage,
+)
+from users.utils import (
+    get_shipping_obj,
 )
 from .notify import (
     notify_user_about_order_creation,
@@ -458,3 +465,58 @@ class MarkPreOrderAsCancelledAPIView(APIView):
             },
             status.HTTP_200_OK
         )
+
+
+class OrderCheckoutCalculationAPIView(APIView):
+    """
+    APIView that calculates the total price during calculation
+    """
+    serializer_class = OrderCheckoutCalculationSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        promocode = serializer.validated_data.get('promocode', None)
+        cart_items = serializer.validated_data.get('cart_items')
+        shipping_id = serializer.validated_data.get('shipping')
+        shipping_obj = get_shipping_obj(shipping_id)
+
+        _, products_price = calculate_final_price(0, 0, cart_items, 0)
+        vat_in_percentage_to_be_applied = get_vat_percentage()
+        vat = (vat_in_percentage_to_be_applied * products_price) / 100
+        delivery_charge = shipping_obj.area.delivery_charge
+
+        total_price = products_price + vat + delivery_charge
+        data = {
+            'products_price': products_price,
+            'vat': vat,
+            'delivery_charge': delivery_charge,
+            'final_price': total_price,   
+        }
+        if promocode is None:
+            data['discount'] = Decimal(0)
+            data['promocode'] = None
+            data['is_valid_promocode'] = None
+        
+        if promocode:
+            try:
+                promo_code_obj = PromoCode.objects.get(code=promocode)
+                if promo_code_obj.is_valid:
+                    discount = promo_code_obj.discount
+                    total_price = total_price - discount
+                    data['discount'] = Decimal(discount)
+                    data['promocode'] = promocode
+                    data['is_valid_promocode'] = True
+                    data['final_price'] = total_price
+                else:
+                    data['promocode'] = promocode
+                    data['is_valid_promocode'] = False
+                    data['discount'] = Decimal(0)
+
+            except ObjectDoesNotExist or MultipleObjectsReturned:
+                data['promocode'] = promocode
+                data['is_valid_promocode'] = False
+                data['discount'] = Decimal(0)
+
+        return Response({'data': data}, status.HTTP_200_OK)

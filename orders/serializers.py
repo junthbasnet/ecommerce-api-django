@@ -199,11 +199,18 @@ class PreOrderProductBundleSerializer(serializers.ModelSerializer):
         return data
 
 
-class OrderCheckoutCalculationSerializer(serializers.ModelSerializer):
+class OrderCheckoutCalculationSerializer(serializers.Serializer):
     """
     Validates whether following fields are set.
     """
-    pass
+    cart_items = serializers.ListField(
+        child=serializers.DictField(allow_empty=False),
+        allow_empty=False
+    )
+    shipping = serializers.IntegerField(required=True)
+    promocode = serializers.CharField(max_length=64, required=False)
+    
+
 
 
 
