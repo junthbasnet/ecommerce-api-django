@@ -164,15 +164,15 @@ class CityAdmin(admin.ModelAdmin):
 
 
 @admin.register(Area)
-class CityAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'city', 'delivery_duration',)
+class AreaAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'city', 'delivery_duration', 'delivery_charge',)
     list_filter = ('city',)
     search_fields = ('name',)
     fieldsets = (
         (
             'General', {
             'fields': (
-                'name', 'city', 'delivery_duration',
+                'name', 'city', 'delivery_duration', 'delivery_charge'
             )
         }),
         (

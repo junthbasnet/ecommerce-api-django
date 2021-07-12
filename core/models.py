@@ -197,6 +197,12 @@ class Area(TimeStampedModel):
         related_name="areas",
     )
     delivery_duration = models.PositiveIntegerField(default=3)
+    delivery_charge = models.DecimalField(
+        _('Delivery Charge'),
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+    )
 
     def __str__(self):
         return f'{self.name}'
