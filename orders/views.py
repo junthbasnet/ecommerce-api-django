@@ -35,6 +35,7 @@ from .serializers import (
     OrderProductSerializer,
     PreOrderProductBundleSerializer,
     OrderCheckoutCalculationSerializer,
+    PreOrderCheckoutCalculationSerializer,
 )
 from .utils import (
     get_product_obj,
@@ -45,9 +46,13 @@ from .utils import (
     get_estimated_delivery_date,
     calculate_final_price,
     get_vat_percentage,
+    get_promocode_discount_if_valid,
 )
 from users.utils import (
     get_shipping_obj,
+)
+from products.utils import (
+    get_product_bundle_for_pre_order_obj,
 )
 from .notify import (
     notify_user_about_order_creation,
@@ -469,7 +474,7 @@ class MarkPreOrderAsCancelledAPIView(APIView):
 
 class OrderCheckoutCalculationAPIView(APIView):
     """
-    APIView that calculates the total price during calculation
+    APIView that calculates the total price during checkout
     """
     serializer_class = OrderCheckoutCalculationSerializer
 
@@ -494,29 +499,41 @@ class OrderCheckoutCalculationAPIView(APIView):
             'delivery_charge': delivery_charge,
             'final_price': total_price,   
         }
-        if promocode is None:
-            data['discount'] = Decimal(0)
-            data['promocode'] = None
-            data['is_valid_promocode'] = None
-        
-        if promocode:
-            try:
-                promo_code_obj = PromoCode.objects.get(code=promocode)
-                if promo_code_obj.is_valid:
-                    discount = promo_code_obj.discount
-                    total_price = total_price - discount
-                    data['discount'] = Decimal(discount)
-                    data['promocode'] = promocode
-                    data['is_valid_promocode'] = True
-                    data['final_price'] = total_price
-                else:
-                    data['promocode'] = promocode
-                    data['is_valid_promocode'] = False
-                    data['discount'] = Decimal(0)
-
-            except ObjectDoesNotExist or MultipleObjectsReturned:
-                data['promocode'] = promocode
-                data['is_valid_promocode'] = False
-                data['discount'] = Decimal(0)
+        get_promocode_discount_if_valid(promocode, data, total_price)
 
         return Response({'data': data}, status.HTTP_200_OK)
+
+
+class PreOrderCheckoutCalculationAPIView(APIView):
+    """
+    APIView that calculates the total price during pre-order checkout
+    """
+    serializer_class = PreOrderCheckoutCalculationSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        promocode = serializer.validated_data.get('promocode', None)
+        product_bundle_id = serializer.validated_data.get('product_bundle')
+        shipping_id = serializer.validated_data.get('shipping')
+        quantity = serializer.validated_data.get('quantity', 1)
+        shipping_obj = get_shipping_obj(shipping_id)
+        product_bundle_obj = get_product_bundle_for_pre_order_obj(product_bundle_id)
+
+        products_price = product_bundle_obj.selling_price * quantity
+        vat_in_percentage_to_be_applied = get_vat_percentage()
+        vat = (vat_in_percentage_to_be_applied * products_price) / 100
+        delivery_charge = shipping_obj.area.delivery_charge
+
+        total_price = products_price + vat + delivery_charge
+        data = {
+            'products_price': products_price,
+            'vat': vat,
+            'delivery_charge': delivery_charge,
+            'final_price': total_price,   
+        }
+        get_promocode_discount_if_valid(promocode, data, total_price)
+
+        return Response({'data': data}, status.HTTP_200_OK)
+

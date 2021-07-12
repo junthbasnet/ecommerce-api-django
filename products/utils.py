@@ -5,7 +5,10 @@ from django.contrib.postgres.search import (
     SearchQuery,
     SearchRank
 )
-from .models import Product
+from .models import (
+    Product,
+    ProductBundleForPreOrder,
+)
 from orders.models import OrderProduct
 
 
@@ -65,3 +68,21 @@ def get_product_obj(product_id):
             code='invalid_product_id'
         )
     return product_obj
+
+
+def get_product_bundle_for_pre_order_obj(product_bundle_for_pre_order_id):
+    """
+    Raises validation error or returns product_bundle_for_pre_order_obj.
+    """
+    try:
+        product_bundle_for_pre_order_obj = ProductBundleForPreOrder.objects.get(pk=product_bundle_for_pre_order_id)
+    except ProductBundleForPreOrder.ObjectDoesNotExist:
+        raise serializers.ValidationError(
+            {
+                'error_message': [
+                    f"ProductBundleForPreOrder with product_bundle_for_pre_order_id:{product_bundle_for_pre_order_id} doesn't exist."
+                ]
+            },
+            code='invalid_product_bundle_for_pre_order_id'
+        )
+    return product_bundle_for_pre_order_obj

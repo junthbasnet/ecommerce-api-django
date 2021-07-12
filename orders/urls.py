@@ -12,6 +12,7 @@ from .views import (
     MarkPreOrderAsCompletedAPIView,
     MarkPreOrderAsCancelledAPIView,
     OrderCheckoutCalculationAPIView,
+    PreOrderCheckoutCalculationAPIView,
 )
 
 urlpatterns = [
@@ -27,4 +28,9 @@ urlpatterns = [
     path('mark-pre-order-complete/', MarkPreOrderAsCompletedAPIView.as_view(), name='mark_pre_order_as_completed'),
     path('mark-pre-order-cancel/', MarkPreOrderAsCancelledAPIView.as_view(), name='mark_pre_order_as_cancelled'),
     path('calculate-price/', OrderCheckoutCalculationAPIView.as_view(), name='price_calculation_during_checkout'),
+    path(
+        'calculate-pre-order-price/',
+        PreOrderCheckoutCalculationAPIView.as_view(), 
+        name='price_calculation_during_pre_order_checkout'
+    ),
 ]

@@ -1,11 +1,18 @@
+from decimal import Decimal
 from datetime import timedelta
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils import timezone
 from rest_framework import serializers
 from payments.models import Payment
 from products.models import Product
-from .models import Order, OrderProduct, PreOrderProductBundle
+from .models import (
+    Order, 
+    OrderProduct, 
+    PreOrderProductBundle,
+    PromoCode,
+)
 from core.models import SiteSetting
+
 
 
 def validate_payment(payment_uuid, user):
@@ -282,6 +289,33 @@ def get_estimated_delivery_date(delivery_duration):
     return timezone.now().date() + timedelta(days=int(delivery_duration))
 
 
+def get_promocode_discount_if_valid(promocode, data, total_price):
+    """
+    Return data dict with promo code discount set if promocode is valid.
+    """
+    if promocode is None:
+            data['discount'] = Decimal(0)
+            data['promocode'] = None
+            data['is_valid_promocode'] = None
+        
+    if promocode:
+        try:
+            promo_code_obj = PromoCode.objects.get(code=promocode)
+            if promo_code_obj.is_valid:
+                discount = promo_code_obj.discount
+                total_price = total_price - discount
+                data['discount'] = Decimal(discount)
+                data['promocode'] = promocode
+                data['is_valid_promocode'] = True
+                data['final_price'] = total_price
+            else:
+                data['promocode'] = promocode
+                data['is_valid_promocode'] = False
+                data['discount'] = Decimal(0)
 
+        except ObjectDoesNotExist or MultipleObjectsReturned:
+            data['promocode'] = promocode
+            data['is_valid_promocode'] = False
+            data['discount'] = Decimal(0)
 
-
+    return data
