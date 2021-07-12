@@ -199,3 +199,11 @@ class PreOrderProductBundleSerializer(serializers.ModelSerializer):
         return data
 
 
+class OrderCheckoutCalculationSerializer(serializers.ModelSerializer):
+    """
+    Validates whether following fields are set.
+    """
+    pass
+
+
+

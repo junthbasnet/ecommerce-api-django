@@ -5,6 +5,9 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 
+from core.serializers import (
+    AreaSerializer,
+)
 from users.helpers import validate_id_token
 from .models import (
     User,
@@ -135,6 +138,7 @@ class ShippingSerializer(serializers.ModelSerializer):
     city_name = serializers.CharField(source='area.city.name', read_only=True)
     city_id = serializers.CharField(source='area.city.pk', read_only=True)
     area_name = serializers.CharField(source='area.name', read_only=True)
+    area = AreaSerializer(read_only=True)
     phone_no = serializers.CharField(required=True)
     class Meta:
         model = Shipping
