@@ -100,6 +100,7 @@ class ProductSerializer(serializers.ModelSerializer):
     is_deal_of_the_day_product = serializers.BooleanField(source='is_deal_of_the_day', read_only=True)
     is_todays_popular_pick_product = serializers.BooleanField(source='is_todays_popular_pick', read_only=True)
     brand_data = serializers.SerializerMethodField(read_only=True)
+    sku = serializers.CharField(max_length=32, required=True)
 
     class Meta:
         model = Product

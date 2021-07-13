@@ -92,6 +92,7 @@ class Product(SEOBaseModel):
     """
     name = models.CharField(_('name'), max_length=255, unique=True)
     slug = models.CharField(_('slug'), max_length=255, unique=True)
+    sku = models.CharField(_('SKU'), max_length=32, default='')
     sub_category = models.ForeignKey(
         'SubCategory',
         on_delete=models.PROTECT,
