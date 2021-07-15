@@ -95,6 +95,21 @@ class UserProfileAPIViewSet(viewsets.ModelViewSet):
 
     def paginate_queryset(self, queryset):
         return None
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(
+            {
+                'message': 'updated successfully',
+                'data': serializer.data
+            },
+            status.HTTP_202_ACCEPTED
+        )
 
 
 class RegisterUserAPIView(APIView):
