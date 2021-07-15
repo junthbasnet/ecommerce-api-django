@@ -180,6 +180,18 @@ class ShippingAPIViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.request.user.shippings.all()
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(
+            {
+                'message': 'created successfully',
+                'data': serializer.data
+            },
+            status=status.HTTP_201_CREATED
+        )
 
     def perform_create(self, serializer):
         is_default = serializer.validated_data.get('is_default')
@@ -206,6 +218,16 @@ class ShippingAPIViewSet(viewsets.ModelViewSet):
         if serializer.validated_data.get('is_default'):
             self.get_queryset().exclude(pk=self.kwargs.get('pk')).update(is_default=False)
         serializer.save()
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(
+            {
+                'message': 'deleted successfully'
+            },
+            status=status.HTTP_204_NO_CONTENT
+        )
 
 
 class TokenCheckAPIView(APIView):
