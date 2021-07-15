@@ -172,6 +172,21 @@ class ShippingAPIViewSet(viewsets.ModelViewSet):
             self.get_queryset().update(is_default=False)
         serializer.save(user=self.request.user)
     
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(
+            {
+                'message': 'updated successfully',
+                'data': serializer.data
+            },
+            status.HTTP_202_ACCEPTED
+        )
+    
     def perform_update(self, serializer):
         if serializer.validated_data.get('is_default'):
             self.get_queryset().exclude(pk=self.kwargs.get('pk')).update(is_default=False)
