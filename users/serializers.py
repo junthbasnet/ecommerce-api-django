@@ -138,7 +138,7 @@ class ShippingSerializer(serializers.ModelSerializer):
     city_name = serializers.CharField(source='area.city.name', read_only=True)
     city_id = serializers.CharField(source='area.city.pk', read_only=True)
     area_name = serializers.CharField(source='area.name', read_only=True)
-    area = AreaSerializer(read_only=True)
+    area_data = serializers.SerializerMethodField(read_only=True)
     phone_no = serializers.CharField(required=True)
     class Meta:
         model = Shipping
@@ -146,3 +146,6 @@ class ShippingSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'user',
         )
+    
+    def get_area_data(self, obj):
+        return AreaSerializer(obj.area).data
