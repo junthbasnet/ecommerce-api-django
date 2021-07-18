@@ -52,6 +52,7 @@ class OrderSerializer(serializers.ModelSerializer):
     Serializes Order model instances.
     """
     payment_uuid = serializers.CharField(max_length=63, write_only=True, required=True)
+    payment_name = serializers.CharField(source='payment.method.method_name', read_only=True)
     cart_items = serializers.ListField(allow_empty=False, write_only=True)
     vat = serializers.DecimalField(max_digits=10, decimal_places=2, write_only=True)
     products_price = serializers.DecimalField(max_digits=10, decimal_places=2, write_only=True)
@@ -65,7 +66,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'id', 'order_uuid', 'user', 'payment', 'delivery_status', 'estimated_delivery_date',
             'delivered_at', 'shipping', 'discount', 'delivery_charge', 'final_price', 'cart_items',
             'payment_uuid', 'products', 'shipping_data', 'created_on', 'modified_on', 'vat',
-            'products_price',
+            'products_price', 'payment_name',
         )
         read_only_fields = (
             'order_uuid', 'user', 'payment', 'delivery_status', 'estimated_delivery_date',
