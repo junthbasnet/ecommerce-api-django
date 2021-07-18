@@ -3,7 +3,7 @@ from .routers import router
 from .views import (
     ApplyPromoCodeGenericAPIView,
     CheckOutCreateAPIView,
-    OrderListAPIView,
+    # OrderListAPIView,
     OrderProductListAPIView,
     MarkOrderAsCompletedAPIView,
     MarkOrderAsCancelledAPIView,
