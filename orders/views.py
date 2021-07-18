@@ -203,7 +203,7 @@ class CheckOutCreateAPIView(CreateAPIView):
         }
 
 
-class OrderListAPIView(ListAPIView):
+class OrderListAPIView(ListAPIView, RetrieveAPIView):
     """
     APIView that lists user orders.
     """
