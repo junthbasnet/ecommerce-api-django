@@ -9,6 +9,7 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.generics import (
     GenericAPIView,
     CreateAPIView,
@@ -203,9 +204,9 @@ class CheckOutCreateAPIView(CreateAPIView):
         }
 
 
-class OrderListAPIView(ListAPIView, RetrieveAPIView):
+class OrderListRetrieveAPIViewSet(ReadOnlyModelViewSet):
     """
-    APIView that lists user orders.
+    APIView that lists and retrieves user orders.
     """
     serializer_class = OrderSerializer
     queryset = Order.objects.none()
