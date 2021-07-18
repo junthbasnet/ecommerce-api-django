@@ -32,9 +32,9 @@ class PromoCodeAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'user', 'payment', 'delivery_status',
-        'estimated_delivery_date', 'delivered_at', 'shipping', 'order_uuid', 'discount',
-        'delivery_charge', 'final_price'
+        'id', 'user', 'payment', 'delivery_status','estimated_delivery_date',
+        'delivered_at', 'shipping', 'order_uuid', 'discount',
+        'delivery_charge', 'vat', 'sub_total', 'final_price',
     )
     list_filter = ('delivery_status', 'payment__method')
     search_fields = ('user__email', 'order_uuid', 'payment__payment_uuid',)
@@ -42,8 +42,9 @@ class OrderAdmin(admin.ModelAdmin):
         (
             'General', {
             'fields': (
-                'user', 'payment', 'delivery_status', 'estimated_delivery_date','delivered_at', 'shipping',
-                'order_uuid', 'discount', 'delivery_charge', 'final_price'
+                'user', 'payment', 'delivery_status', 'estimated_delivery_date',
+                'delivered_at', 'shipping', 'order_uuid', 'discount', 'delivery_charge',
+                'vat', 'sub_total', 'final_price',
             )
         }),
         (

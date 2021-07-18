@@ -146,13 +146,33 @@ class Order(BaseModel):
             'discount using promo code.'
         )
     )
+    vat = models.DecimalField(
+        _('VAT'),
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(0)],
+        help_text=_(
+            'vat added on this order.'
+        )
+    )
+    sub_total = models.DecimalField(
+        _('sub total'),
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(0)],
+        help_text=_(
+            'total price on products only (without delivery charge, discount, vat)'
+        )
+    )
     final_price = models.DecimalField(
         _('final price'),
         max_digits=10,
         decimal_places=2,
         validators=[MinValueValidator(1)],
         help_text=_(
-            'final price of all products in cart.'
+            'final price of all products in cart (including delivery charge, discount, vat).'
         )
     )
 

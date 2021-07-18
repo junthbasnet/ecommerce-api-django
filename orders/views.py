@@ -134,6 +134,8 @@ class CheckOutCreateAPIView(CreateAPIView):
         payment_obj = serializer.validated_data.get('payment_obj')
         final_price = serializer.validated_data.get('final_price')
         shipping = serializer.validated_data.get('shipping')
+        vat = serializer.validated_data.get('vat')
+        sub_total = serializer.validated_data.get('products_price')
         estimated_delivery_date = get_estimated_delivery_date(shipping.area.delivery_duration)
 
         order_obj = Order.objects.create(
@@ -142,6 +144,8 @@ class CheckOutCreateAPIView(CreateAPIView):
             shipping = shipping,
             discount = serializer.validated_data.get('discount', 0),
             delivery_charge = serializer.validated_data.get('delivery_charge', 0),
+            vat = vat,
+            sub_total = sub_total,
             final_price = final_price,
             estimated_delivery_date = estimated_delivery_date
         )
