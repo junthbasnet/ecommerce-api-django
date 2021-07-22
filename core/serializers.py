@@ -82,9 +82,10 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
         model = PaymentMethod
         fields = (
             'id', 'method_name', 'charge', 'icon', 'priority', 'created_on', 'modified_on',
+            'slug',
         )
         read_only_fields = (
-            'created_on', 'modified_on',
+            'created_on', 'modified_on', 'slug',
         )
     
     def validate(self, data):
