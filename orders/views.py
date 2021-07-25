@@ -501,8 +501,9 @@ class OrderCheckoutCalculationAPIView(APIView):
         data = {
             'products_price': products_price,
             'vat': vat,
+            'vat_in_percentage': vat_in_percentage_to_be_applied,
             'delivery_charge': delivery_charge,
-            'final_price': total_price,   
+            'final_price': total_price,
         }
         get_promocode_discount_if_valid(promocode, data, total_price)
 
@@ -535,8 +536,9 @@ class PreOrderCheckoutCalculationAPIView(APIView):
         data = {
             'products_price': products_price,
             'vat': vat,
+            'vat_in_percentage': vat_in_percentage_to_be_applied,
             'delivery_charge': delivery_charge,
-            'final_price': total_price,   
+            'final_price': total_price,
         }
         get_promocode_discount_if_valid(promocode, data, total_price)
 
