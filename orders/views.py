@@ -121,10 +121,11 @@ class CheckOutCreateAPIView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create_order(serializer)
+        order_obj = self.perform_create_order(serializer)
         return Response(
             {
-                "message":"successfully ordered."
+                "message":"successfully ordered.",
+                "data": self.serializer_class(order_obj)
             },
             status=status.HTTP_201_CREATED
         )
@@ -152,6 +153,7 @@ class CheckOutCreateAPIView(CreateAPIView):
         order_obj.order_uuid = generate_order_uuid(order_obj.pk)
         order_obj.save()
         self.perform_create_order_product(serializer, order_obj)
+        return order_obj
 
     def perform_create_order_product(self, serializer, order_obj):
         """
@@ -177,6 +179,7 @@ class CheckOutCreateAPIView(CreateAPIView):
                 net_total = net_total,
                 estimated_delivery_date = order_obj.estimated_delivery_date  
             )
+            order_obj.reward_points += product_obj.reward_points
 
             # add reward points to user's account
             self.perform_add_reward_points_to_user_account(product_obj)

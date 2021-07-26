@@ -66,11 +66,11 @@ class OrderSerializer(serializers.ModelSerializer):
             'id', 'order_uuid', 'user', 'payment', 'delivery_status', 'estimated_delivery_date',
             'delivered_at', 'shipping', 'discount', 'delivery_charge', 'final_price', 'cart_items',
             'payment_uuid', 'products', 'shipping_data', 'created_on', 'modified_on', 'vat',
-            'products_price', 'payment_name', 'sub_total',
+            'products_price', 'payment_name', 'sub_total', 'reward_points',
         )
         read_only_fields = (
             'order_uuid', 'user', 'payment', 'delivery_status', 'estimated_delivery_date',
-            'delivered_at',
+            'delivered_at', 'reward_points',
         )
     
     def get_user(self, obj):

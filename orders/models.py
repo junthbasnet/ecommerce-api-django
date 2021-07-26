@@ -175,6 +175,13 @@ class Order(BaseModel):
             'final price of all products in cart (including delivery charge, discount, vat).'
         )
     )
+    reward_points = models.PositiveIntegerField(
+        _('reward points'),
+        default=0,
+        help_text=_(
+            'points received after ordering product.'
+        )
+    )
 
     class Meta:
         verbose_name = _('Order')
