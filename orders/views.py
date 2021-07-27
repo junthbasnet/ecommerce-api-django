@@ -125,7 +125,7 @@ class CheckOutCreateAPIView(CreateAPIView):
         return Response(
             {
                 "message":"successfully ordered.",
-                "data": self.serializer_class(order_obj)
+                "data": self.serializer_class(order_obj, context={'request':request}).data
             },
             status=status.HTTP_201_CREATED
         )
