@@ -10,7 +10,8 @@ PAYMENT_METHOD_NAMES = [
     'imepay',
     'stripe',
     'paypal',
-    'cybersource'
+    'cybersource',
+    'cod',
 ]
 
 required_credentials = {
@@ -20,7 +21,8 @@ required_credentials = {
     'imepay': ['IME_MERCHANT_CODE', 'IMEPAY_TOKEN', 'IME_MODULE'],
     'stripe': ['STRIPE_API_KEY'],
     'paypal': ['PAYPAL_CLIENT_ID', 'PAYPAL_SECRET'],
-    'cybersource': ['CYBERSOURCE_ACCESS_KEY', 'CYBERSOURCE_SECRET_KEY', 'CYBERSOURCE_PROFILE_ID']
+    'cybersource': ['CYBERSOURCE_ACCESS_KEY', 'CYBERSOURCE_SECRET_KEY', 'CYBERSOURCE_PROFILE_ID'],
+    'cod': [],
 }
 
 def get_payment_method_names():
