@@ -23,6 +23,9 @@ from dashboard.helpers.best_selling import (
     get_todays_best_selling_products,
     get_weeks_best_selling_products,
 )
+from dashboard.helpers.payment_methods import (
+    get_weeks_sales_according_to_payment_method,
+)
 
 User = get_user_model()
 
@@ -72,6 +75,10 @@ class AccountingAPIView(APIView):
 
                 # Fourth  Row
                 'order_data_for_last_seven_days': get_weeks_order_data(),
+                
+                # Fifth Row
+                'sales_according_to_payment_method_for_last_seven_days': get_weeks_sales_according_to_payment_method(),
+                
             },
             status.HTTP_200_OK
         )
