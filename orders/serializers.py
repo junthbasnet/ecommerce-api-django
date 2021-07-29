@@ -121,7 +121,7 @@ class PreOrderProductBundleSerializer(serializers.ModelSerializer):
     """
     payment_uuid = serializers.CharField(max_length=63, write_only=True, required=True)
     product_bundle_data = serializers.SerializerMethodField(read_only=True)
-    vat = serializers.DecimalField(max_digits=10, decimal_places=2, write_only=True)
+    vat = serializers.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
         model=PreOrderProductBundle

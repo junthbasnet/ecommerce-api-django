@@ -347,10 +347,13 @@ class PreOrderCheckOutCreateAPIView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        pre_order_product_bundle_obj = self.perform_create(serializer)
         return Response(
             {
-                "message":"successfully pre-ordered."
+                "message":"successfully pre-ordered.",
+                "data": self.serializer_class(
+                    pre_order_product_bundle_obj,
+                    context={'request':request}).data
             },
             status=status.HTTP_201_CREATED
         )
@@ -362,6 +365,7 @@ class PreOrderCheckOutCreateAPIView(CreateAPIView):
         shipping = serializer.validated_data.get('shipping')
         estimated_delivery_date = get_estimated_delivery_date(shipping.area.delivery_duration)
         product_bundle_obj = serializer.validated_data.get('product_bundle')
+        vat = serializer.validated_data.get('vat')
 
         pre_order_product_bundle_obj = PreOrderProductBundle.objects.create(
             user = self.request.user,
@@ -371,6 +375,7 @@ class PreOrderCheckOutCreateAPIView(CreateAPIView):
             shipping = shipping,
             discount = serializer.validated_data.get('discount', 0),
             delivery_charge = serializer.validated_data.get('delivery_charge', 0),
+            vat = vat,
             quantity = serializer.validated_data.get('quantity', 1),
             final_price = final_price,
             estimated_delivery_date = estimated_delivery_date
@@ -381,6 +386,7 @@ class PreOrderCheckOutCreateAPIView(CreateAPIView):
         send_pre_order_create_mail_to_user(pre_order_product_bundle_obj)
         notify_user_about_pre_order_creation(pre_order_product_bundle_obj)
         notify_admin_about_pre_order_creation(pre_order_product_bundle_obj)
+        return pre_order_product_bundle_obj
 
     def get_serializer_context(self):
         """
@@ -546,4 +552,3 @@ class PreOrderCheckoutCalculationAPIView(APIView):
         get_promocode_discount_if_valid(promocode, data, total_price)
 
         return Response({'data': data}, status.HTTP_200_OK)
-

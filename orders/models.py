@@ -259,6 +259,16 @@ class PreOrderProductBundle(BaseModel):
             'shipping delivery charge.'
         )
     )
+    vat = models.DecimalField(
+        _('VAT'),
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(0)],
+        help_text=_(
+            'vat added on this preorder product bundle.'
+        )
+    )
     final_price = models.DecimalField(
         _('final price'),
         max_digits=10,
