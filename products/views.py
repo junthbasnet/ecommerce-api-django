@@ -109,7 +109,7 @@ class SubCategoryAPIViewSet(ModelViewSet):
     search_fields = (
         'name', 'description', 'slug', 'category__name', 'category__description',
     )
-    filterset_fields = ('category', 'category__slug',)
+    filterset_fields = ('category', 'category__slug', 'is_popular',)
 
     def destroy(self, request, *args, **kwargs):
         """

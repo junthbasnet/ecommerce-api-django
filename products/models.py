@@ -51,6 +51,7 @@ class SubCategory(SEOBaseModel):
     slug = models.SlugField(max_length=255, unique=True)
     description = models.TextField(default='')
     image = models.ImageField(upload_to='sub-categories',null=True, blank=True)
+    is_popular = models.BooleanField(_('Is popular'), default=False)
 
     class Meta:
         verbose_name = _('Sub-Category')
