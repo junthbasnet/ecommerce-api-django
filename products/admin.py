@@ -61,15 +61,15 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(SubCategory)
 class SubCategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'category', 'image_thumbnail',)
-    list_filter = ('category',)
+    list_display = ('id', 'name', 'category', 'image_thumbnail', 'is_popular',)
+    list_filter = ('category', 'is_popular',)
     search_fields = ('name', 'description', 'category__name', 'category__description',)
     prepopulated_fields = {'slug': ('name',)}
     fieldsets = (
         (
             'General', {
             'fields': (
-                'category', 'name', 'slug', 'description', 'image',
+                'category', 'name', 'slug', 'description', 'image', 'is_popular'
             )
         }),
 
