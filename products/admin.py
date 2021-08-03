@@ -403,7 +403,7 @@ class ProductForPreOrderAdmin(admin.ModelAdmin):
 class ProductBundleForPreOrderAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'name', 'selling_price', 'description',
-        'is_active', 'image_thumbnail',
+        'is_active', 'image_thumbnail', 'reward_points',
     )
     list_filter = ('products', 'is_active',)
     search_fields = ('name', 'description', 'overview',)
@@ -415,6 +415,7 @@ class ProductBundleForPreOrderAdmin(admin.ModelAdmin):
             'fields': (
                 'name', 'slug', 'image', 'description', 'products',
                 'overview', 'marked_price', 'selling_price', 'is_active',
+                'reward_points',
             )
         }),
 

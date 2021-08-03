@@ -415,6 +415,13 @@ class ProductBundleForPreOrder(SEOBaseModel):
         help_text=_('short description of what this bundle contains.')
     )
     overview = models.TextField(_('overview'), default='')
+    reward_points = models.PositiveIntegerField(
+        _('reward points'),
+        default=0,
+        help_text=_(
+            'points given to user after preordering this bundle.'
+        )
+    )
     marked_price = models.DecimalField(
         _('marked price'),
         max_digits=10,

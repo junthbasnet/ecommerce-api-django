@@ -106,7 +106,7 @@ class PreOrderProductBundleAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'user', 'payment', 'product_bundle', 'quantity', 'rate',
         'vat', 'delivery_status', 'delivered_at', 'shipping', 'pre_order_uuid',
-        'final_price'
+        'final_price', 'reward_points',
     )
     list_filter = ('delivery_status', 'payment__method')
     search_fields = ('user__email', 'pre_order_uuid', 'payment__payment_uuid',)
@@ -115,7 +115,7 @@ class PreOrderProductBundleAdmin(admin.ModelAdmin):
             'General', {
             'fields': (
                 'user', 'payment','product_bundle', 'quantity', 'rate', 'delivery_status', 'estimated_delivery_date','delivered_at', 'shipping', 'vat',
-                'pre_order_uuid', 'discount', 'delivery_charge', 'final_price'
+                'pre_order_uuid', 'discount', 'delivery_charge', 'final_price', 'reward_points',
             )
         }),
         (

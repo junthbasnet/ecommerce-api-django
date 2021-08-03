@@ -278,6 +278,13 @@ class PreOrderProductBundle(BaseModel):
             'final price of all products in bundle.'
         )
     )
+    reward_points = models.PositiveIntegerField(
+        _('reward points'),
+        default=0,
+        help_text=_(
+            'points received after preordering product-bundle.'
+        )
+    )
 
     class Meta:
         verbose_name = _('Pre-Order Product Bundle')

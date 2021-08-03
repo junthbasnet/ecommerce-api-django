@@ -179,21 +179,21 @@ class CheckOutCreateAPIView(CreateAPIView):
                 net_total = net_total,
                 estimated_delivery_date = order_obj.estimated_delivery_date  
             )
-            order_obj.reward_points += product_obj.reward_points
+            order_obj.reward_points += (product_obj.reward_points) * product_quantity
 
             # add reward points to user's account
-            self.perform_add_reward_points_to_user_account(product_obj)
+            self.perform_add_reward_points_to_user_account(product_obj, product_quantity)
         send_order_create_mail_to_user(order_obj)
         notify_user_about_order_creation(order_obj)
         notify_admin_about_order_creation(order_obj)
         self.set_products_bought_together(order_obj)
     
-    def perform_add_reward_points_to_user_account(self, product_obj):
+    def perform_add_reward_points_to_user_account(self, product_obj, product_quantity):
         """
         adds reward points to user's account after purchasing an item.
         """
         user = self.request.user
-        product_reward_points = product_obj.reward_points
+        product_reward_points = (product_obj.reward_points * product_quantity)
         user.reward_points += product_reward_points
         user.save()
 
@@ -366,6 +366,9 @@ class PreOrderCheckOutCreateAPIView(CreateAPIView):
         estimated_delivery_date = get_estimated_delivery_date(shipping.area.delivery_duration)
         product_bundle_obj = serializer.validated_data.get('product_bundle')
         vat = serializer.validated_data.get('vat')
+        
+        quantity= serializer.validated_data.get('quantity', 1)
+        reward_points = (product_bundle_obj.reward_points) * quantity
 
         pre_order_product_bundle_obj = PreOrderProductBundle.objects.create(
             user = self.request.user,
@@ -376,12 +379,18 @@ class PreOrderCheckOutCreateAPIView(CreateAPIView):
             discount = serializer.validated_data.get('discount', 0),
             delivery_charge = serializer.validated_data.get('delivery_charge', 0),
             vat = vat,
-            quantity = serializer.validated_data.get('quantity', 1),
+            quantity = quantity,
             final_price = final_price,
-            estimated_delivery_date = estimated_delivery_date
+            estimated_delivery_date = estimated_delivery_date,
+            reward_points = reward_points,
         )
         pre_order_product_bundle_obj.pre_order_uuid = generate_pre_order_uuid(pre_order_product_bundle_obj.pk)
         pre_order_product_bundle_obj.save()
+        
+        # add reward points
+        user = self.request.user
+        user.reward_points += reward_points
+        user.save()
 
         send_pre_order_create_mail_to_user(pre_order_product_bundle_obj)
         notify_user_about_pre_order_creation(pre_order_product_bundle_obj)

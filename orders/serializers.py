@@ -129,11 +129,11 @@ class PreOrderProductBundleSerializer(serializers.ModelSerializer):
             'id', 'pre_order_uuid', 'product_bundle', 'quantity', 'user', 'payment',
             'delivery_status', 'estimated_delivery_date', 'delivered_at', 'shipping',
             'discount', 'delivery_charge', 'final_price', 'payment_uuid',
-            'created_on', 'modified_on', 'product_bundle_data', 'vat',
+            'created_on', 'modified_on', 'product_bundle_data', 'vat', 'reward_points',
         )
         read_only_fields = (
             'pre_order_uuid', 'user', 'payment', 'delivery_status',
-            'estimated_delivery_date', 'delivered_at',
+            'estimated_delivery_date', 'delivered_at', 'reward_points',
         )
     
     def get_product_bundle_data(self, obj):
